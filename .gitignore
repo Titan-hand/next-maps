@@ -27,6 +27,7 @@ yarn-error.log*
 
 # local env files
 .env*.local
+generate-supa-types.sh
 
 # vercel
 .vercel
