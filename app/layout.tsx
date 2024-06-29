@@ -1,3 +1,4 @@
+import { Providers } from "./providers";
 import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 
@@ -17,8 +18,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
       </head>
-      <body className="bg-background text-foreground">
-        <main className="min-h-screen flex flex-col items-center">{children}</main>
+   
+      <body>
+        <main
+          style={{
+            minHeight: "100vh",
+            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <Providers>{children}</Providers>
+        </main>
       </body>
     </html>
   );
