@@ -25,3 +25,8 @@
     @apply border-foreground/20;
   }
 }
+.leaflet-container {
+  width: 100%;
+  height: 100vh;
+  z-index: 1;
+}
