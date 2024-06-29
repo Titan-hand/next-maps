@@ -1,5 +1,6 @@
 import { Providers } from "./providers";
 import { GeistSans } from "geist/font/sans";
+
 import "./globals.css";
 
 const defaultUrl = process.env.VERCEL_URL
@@ -18,7 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
       </head>
-   
+
       <body>
         <main
           style={{
