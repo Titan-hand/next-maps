@@ -7,6 +7,7 @@ import { Input, Box, InputRightElement, InputGroup, Button } from "@chakra-ui/re
 import { useGeolocation } from "@uidotdev/usehooks";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { useEffect, useState } from "react";
+import MapLoader from "@/components/MapLoader";
 import useUbication from "../../hooks/useUbication";
 import RecenterAutomatically from "./RecenterAutomatically";
 
@@ -35,11 +36,7 @@ export default function LeafletMap() {
     setAddressInput(address?.display_name as string);
   }, [address]);
 
-  if (!h || isLoading) return <p>Loading...</p>;
-
-  if (loading) {
-    return <p>Loading... (you may need to enable permissions)</p>;
-  }
+  if (!h || isLoading || loading) return <MapLoader />;
 
   if (isError || error) {
     return <p>Enable permissions to access your location data</p>;
