@@ -20,79 +20,76 @@ import {
   AlertDescription,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { FiArrowRight, FiEye, FiEyeOff } from "react-icons/fi";
 import { redirect } from "next/navigation";
-import Link from "next/link";
-import useAuth from "@/hooks/useAuth";
 
-const LoginPage = () => {
+import useAuth from "@/hooks/useAuth";
+import Link from "next/link";
+
+const SignUp = () => {
   // React hook form
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<{
     email: string;
     password: string;
+    passwordRepeat: string;
   }>();
-  const { user, login } = useAuth();
+  const { user, signUp } = useAuth();
   const toast = useToast();
 
   const [showPass, setShowPass] = useState<boolean>(false);
+  const [showPass2, setShowPass2] = useState<boolean>(false);
+
   const [loading, setLoading] = useState<boolean>(false);
-  const [invalidCredentialsError, setInvalidCredentialsError] =
-    useState<boolean>(false);
+  const [signUpError, setSignUpError] = useState<boolean>(false);
+  const [signUpSuccess, setSignUpSuccess] = useState<boolean>(false);
 
   const handleToggleShowPassword = () => setShowPass(!showPass);
+  const handleToggleShowPassword2 = () => setShowPass2(!showPass2);
 
   const onSubmit = handleSubmit(async (validFormData) => {
     try {
       setLoading(true);
-      setInvalidCredentialsError(false);
+      setSignUpError(() => false);
+      setSignUpSuccess(() => false);
 
       const { email, password } = validFormData;
 
-      const { error } = await login({ email, password });
+      const { error } = await signUp({ email, password });
 
-      if (!error) {
-        toast({
-          title: "Welcome back!",
-          status: "success",
-          position: "top",
-        });
+      if (error) {
+        setSignUpError(() => true);
         return;
       }
 
-      if (error.message === "Email not confirmed") {
-        toast({
-          title: "Need to confirm email!",
-          description: `Please check your email to confirm your account (${email})`,
-          status: "error",
-          position: "top",
-          isClosable: true,
-        });
-        return;
-      }
-      // Another type of error, like invalid credentials
-      else {
-        setInvalidCredentialsError(true);
-      }
+      toast({
+        title: "Success",
+        description: "Please check your email to verify your account!",
+        status: "success",
+        position: "top",
+      });
+
+      setSignUpSuccess(() => true);
     } catch (error) {
       toast({
-        title: "Sorry!",
-        description: "Invalid email or password",
+        title: "Error creating user!",
+        description: "Something went wrong",
         status: "error",
         position: "top",
       });
+      setSignUpError(() => true);
+      setSignUpSuccess(() => false);
     } finally {
       setLoading(false);
     }
   });
 
   // Redirect if user is already logged in
-  console.log(user);
-
   if (user) {
     redirect("/");
   }
@@ -111,7 +108,7 @@ const LoginPage = () => {
         <Box
           rounded="xl"
           px="5"
-          pt="5"
+          pt="12"
           flex="1"
           textAlign="center"
           shadow="xl"
@@ -120,13 +117,22 @@ const LoginPage = () => {
           <Box py="5">
             <form onSubmit={onSubmit} autoComplete="off">
               <VStack spacing="4">
-                {invalidCredentialsError && (
+                {signUpError && (
                   <Alert status="error">
                     <AlertIcon />
-                    <AlertTitle>Invalid email or password!</AlertTitle>
-                    <AlertDescription>Please try again.</AlertDescription>
+                    <AlertTitle>Error creating user!</AlertTitle>
                   </Alert>
                 )}
+                {signUpSuccess && (
+                  <Alert status="success">
+                    <AlertIcon />
+                    <AlertTitle>Account created!</AlertTitle>
+                    <AlertDescription>
+                      Please check your email to verify account
+                    </AlertDescription>
+                  </Alert>
+                )}
+                {/* Email */}
                 <FormControl isInvalid={errors.email ? true : false} isRequired>
                   <FormLabel htmlFor="email">Email</FormLabel>
                   <Input
@@ -149,6 +155,7 @@ const LoginPage = () => {
                     </FormErrorMessage>
                   )}
                 </FormControl>
+                {/* Password */}
                 <FormControl
                   isInvalid={errors.password ? true : false}
                   isRequired
@@ -182,6 +189,42 @@ const LoginPage = () => {
                     </FormErrorMessage>
                   )}
                 </FormControl>
+                {/* Password Repeat*/}
+                <FormControl
+                  isInvalid={errors.passwordRepeat ? true : false}
+                  isRequired
+                >
+                  <FormLabel htmlFor="passwordRepeat">
+                    Repeat Password
+                  </FormLabel>
+                  <InputGroup>
+                    <Input
+                      type={showPass2 ? "text" : "password"}
+                      {...register("passwordRepeat", {
+                        required: true,
+                        validate: (value) =>
+                          value === watch("password") ||
+                          "Passwords do not match",
+                      })}
+                      size="lg"
+                    />
+                    <InputRightElement width="5.5rem" mt="4px" mr="4px">
+                      <IconButton
+                        size="sm"
+                        onClick={handleToggleShowPassword2}
+                        icon={showPass2 ? <FiEyeOff /> : <FiEye />}
+                        aria-label="Show password"
+                        title={showPass2 ? "Hide password" : "Show password"}
+                        bg="gray.300"
+                      />
+                    </InputRightElement>
+                  </InputGroup>
+                  {errors.passwordRepeat && (
+                    <FormErrorMessage textAlign="left">
+                      {errors.passwordRepeat.message}
+                    </FormErrorMessage>
+                  )}
+                </FormControl>
                 <VStack w="100%">
                   <Button
                     mt={4}
@@ -192,23 +235,17 @@ const LoginPage = () => {
                     isLoading={loading}
                     rightIcon={<Icon as={FiArrowRight} fontSize="xl" />}
                   >
-                    Login
+                    Sign Up
                   </Button>
                 </VStack>
               </VStack>
             </form>
-            {/* Forgot password */}
-            <Box mt="5">
-              <Button variant="link" size="sm">
-                Forgot password?
-              </Button>
-            </Box>
-            {/* Link to sign up */}
+            {/* Link to login */}
             <HStack justify="center" mt="5">
-              <Link href="/register">
+              <Link href="/login">
                 <HStack justify="center" _hover={{ textDecor: "underline" }}>
-                  <Box>Don't have an account?</Box>
-                  <Box color="blue.300">Sign up</Box>
+                  <Box>Already have an account?</Box>
+                  <Box color="blue.300">Login</Box>
                 </HStack>
               </Link>
             </HStack>
@@ -219,4 +256,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default SignUp;

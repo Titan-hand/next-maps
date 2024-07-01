@@ -6,6 +6,7 @@ import { use100vh } from "react-div-100vh";
 import { useGeolocation } from "@uidotdev/usehooks";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import useUbication from "../../hooks/useUbication";
+import { HEADER_HEIGHT } from "@/const/stylesConst";
 
 export default function LeafletMap() {
   const h = use100vh();
@@ -34,7 +35,11 @@ export default function LeafletMap() {
       }}
       zoom={12}
       scrollWheelZoom={true}
-      style={{ height: h + "px", width: "100%" }}
+      style={{
+        height: `calc(${h}px - ${HEADER_HEIGHT})`,
+        width: "100%",
+        zIndex: 1,
+      }}
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -46,9 +51,7 @@ export default function LeafletMap() {
           lng: state.longitude!,
         }}
       >
-        <Popup>
-          {address?.display_name}
-        </Popup>
+        <Popup>{address?.display_name}</Popup>
       </Marker>
     </MapContainer>
   );

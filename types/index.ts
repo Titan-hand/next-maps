@@ -1,3 +1,6 @@
+import { User as SupabaseUser } from "@supabase/supabase-js";
+// ##### MAPS #####
+
 interface Address {
   house_number: string;
   road: string;
@@ -36,5 +39,10 @@ interface AddressResponse extends Location {
   address: Address;
 }
 
-
 export type { AddressResponse };
+
+// ##### USER #####
+
+type User = SupabaseUser;
+
+export type { User };

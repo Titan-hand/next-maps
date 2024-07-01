@@ -1,5 +1,7 @@
 import { Providers } from "./providers";
 import { GeistSans } from "geist/font/sans";
+import { CustomLayout } from "@/components/CustomLayout";
+import { APP_BACKGROUND_COLOR } from "@/const/stylesConst";
 
 import "./globals.css";
 
@@ -13,11 +15,18 @@ export const metadata = {
   description: "The fastest way to build apps with Next.js and Supabase",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en" className={GeistSans.className}>
       <head>
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+        <link
+          rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        />
       </head>
 
       <body>
@@ -27,9 +36,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             width: "100%",
             display: "flex",
             flexDirection: "column",
+            backgroundColor: APP_BACKGROUND_COLOR,
           }}
         >
-          <Providers>{children}</Providers>
+          <Providers>
+            <CustomLayout>{children}</CustomLayout>
+          </Providers>
         </main>
       </body>
     </html>
