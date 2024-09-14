@@ -39,6 +39,14 @@ interface AddressResponse extends Location {
   address: Address;
 }
 
+export interface PlaceUploaded {
+  id: string;
+  name: string;
+  uploaded_by_user_id: string;
+  description?: string;
+  image_url?: string;
+}
+
 export type { AddressResponse };
 
 // ##### USER #####

@@ -20,7 +20,7 @@ import {
   AlertDescription,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { FiArrowRight, FiEye, FiEyeOff } from "react-icons/fi";
 import { redirect } from "next/navigation";
 import Link from "next/link";

@@ -8,7 +8,7 @@ export const LazyMap = dynamic(() => import("./LeafletMap"), {
   loading: () => <MapLoader />,
 });
 
-export default function page() {
+export default function Page() {
   return (
     <Box flex={1}>
       <LazyMap/>
