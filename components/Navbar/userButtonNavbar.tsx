@@ -13,10 +13,33 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { FiLogOut, FiSettings, FiChevronDown } from "react-icons/fi";
+import { FiLogOut, FiChevronDown, FiUser } from "react-icons/fi";
 import useAuth from "@/hooks/useAuth";
+import NextLink from "next/link";
+import { createClient } from "@/utils/supabase/client";
+import { useState, useEffect } from "react";
+import { SimpleUser } from "@/types";
 
 export const UserButtonNavbar = () => {
+  const supabase = createClient();
+  const [userBasicData, setUserBasicData] = useState<SimpleUser | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data, error } = await supabase
+        .from("users")
+        .select("*")
+        .eq("id", user?.id)
+        .returns<SimpleUser[]>();
+      if (error) {
+        console.error(error);
+        return;
+      }
+      setUserBasicData(data[0]);
+    };
+    fetchUser();
+  }, []);
+
   const { user, logout } = useAuth();
   const disc = useDisclosure();
 
@@ -33,7 +56,11 @@ export const UserButtonNavbar = () => {
             cursor="pointer"
           >
             <HStack alignItems="center">
-              <Avatar size="sm" name={user?.email}>
+              <Avatar
+                size="sm"
+                name={user?.email}
+                src={userBasicData?.avatar_url || ""}
+              >
                 <AvatarBadge boxSize="1.25em" bg="green.500" />
               </Avatar>
               <VStack spacing={0} align="flex-start">
@@ -62,8 +89,12 @@ export const UserButtonNavbar = () => {
 
             <MenuDivider />
 
-            <MenuItem icon={<FiSettings />} onClick={disc.onOpen}>
-              Settings
+            <MenuItem
+              as={NextLink}
+              href={`/profile/${user?.id}`}
+              icon={<FiUser />}
+            >
+              Profile
             </MenuItem>
             <MenuItem icon={<FiLogOut />} onClick={logout}>
               Sign out

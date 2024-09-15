@@ -25,6 +25,7 @@ import { FiArrowRight, FiEye, FiEyeOff } from "react-icons/fi";
 import { redirect } from "next/navigation";
 
 import useAuth from "@/hooks/useAuth";
+import { createClient } from "@/utils/supabase/client";
 import Link from "next/link";
 
 const SignUp = () => {
@@ -41,6 +42,7 @@ const SignUp = () => {
   }>();
   const { user, signUp } = useAuth();
   const toast = useToast();
+  const supabase = createClient();
 
   const [showPass, setShowPass] = useState<boolean>(false);
   const [showPass2, setShowPass2] = useState<boolean>(false);
@@ -60,10 +62,30 @@ const SignUp = () => {
 
       const { email, password } = validFormData;
 
-      const { error } = await signUp({ email, password });
+      const { error, user } = await signUp({ email, password });
 
       if (error) {
         setSignUpError(() => true);
+        return;
+      }
+
+      // Register user in database
+      const { error: dbError } = await supabase.from("users").insert({
+        id: user?.id || window.crypto.randomUUID(),
+        username: user?.email || window.crypto.randomUUID(),
+        avatar_url: user?.user_metadata?.avatar_url || "",
+      });
+
+      if (dbError) {
+        console.error(dbError);
+        toast({
+          title: "Error creating user!",
+          description: "Something went wrong",
+          status: "error",
+          position: "top",
+        });
+        setSignUpError(() => true);
+        setSignUpSuccess(() => false);
         return;
       }
 

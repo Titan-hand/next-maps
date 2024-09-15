@@ -22,9 +22,10 @@ import {
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FiArrowRight, FiEye, FiEyeOff } from "react-icons/fi";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import Link from "next/link";
 import useAuth from "@/hooks/useAuth";
+import { isRedirectError } from "next/dist/client/components/redirect";
 
 const LoginPage = () => {
   // React hook form
@@ -38,6 +39,7 @@ const LoginPage = () => {
   }>();
   const { user, login } = useAuth();
   const toast = useToast();
+  const router = useRouter();
 
   const [showPass, setShowPass] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -47,6 +49,8 @@ const LoginPage = () => {
   const handleToggleShowPassword = () => setShowPass(!showPass);
 
   const onSubmit = handleSubmit(async (validFormData) => {
+    let redirectRoute = "";
+
     try {
       setLoading(true);
       setInvalidCredentialsError(false);
@@ -61,6 +65,7 @@ const LoginPage = () => {
           status: "success",
           position: "top",
         });
+        redirectRoute = "/";
         return;
       }
 
@@ -79,20 +84,27 @@ const LoginPage = () => {
         setInvalidCredentialsError(true);
       }
     } catch (error) {
-      toast({
-        title: "Sorry!",
-        description: "Invalid email or password",
-        status: "error",
-        position: "top",
-      });
+      console.error("the error", error);
+      // If the error is a redirect error, we can handle it here
+      // una mamawebada de Next.js con la funcion redirect que causa error si la usas, que manguangua
+      if (isRedirectError(error)) {
+        console.log("is redirect error, nothing to worry about");
+      } else {
+        toast({
+          title: "Sorry!",
+          description: "Invalid email or password",
+          status: "error",
+          position: "top",
+        });
+      }
     } finally {
       setLoading(false);
+      if (redirectRoute) router.push(redirectRoute);
     }
   });
 
   // Redirect if user is already logged in
-  console.log(user);
-
+  // console.log(user);
   if (user) {
     redirect("/");
   }

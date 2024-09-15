@@ -1,3 +1,7 @@
+// ========================================================
+// NOTE: This page is only used for demonstration purposes
+// ========================================================
+
 import { createClient } from "@/utils/supabase/server";
 import { type Note } from "@/types/note";
 

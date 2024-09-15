@@ -4,9 +4,15 @@ import { UserButtonNavbar } from "./userButtonNavbar";
 import { LoginButtonNavbar } from "./loginButtonNavbar";
 import useAuth from "@/hooks/useAuth";
 import { HEADER_HEIGHT } from "@/const/stylesConst";
+import { useEffect, useState } from "react";
 
 export const Navbar = () => {
   const { user } = useAuth();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    setIsLoggedIn(!!user);
+  }, [user]);
 
   return (
     <HStack
@@ -42,7 +48,7 @@ export const Navbar = () => {
       </Stack>
 
       <Box zIndex={2}>
-        {user ? <UserButtonNavbar /> : <LoginButtonNavbar />}
+        {isLoggedIn ? <UserButtonNavbar /> : <LoginButtonNavbar />}
       </Box>
     </HStack>
   );

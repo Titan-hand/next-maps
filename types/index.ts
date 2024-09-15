@@ -1,4 +1,5 @@
 import { User as SupabaseUser } from "@supabase/supabase-js";
+import { Database } from "./supa_database.types";
 // ##### MAPS #####
 
 interface Address {
@@ -54,3 +55,5 @@ export type { AddressResponse };
 type User = SupabaseUser;
 
 export type { User };
+
+export type SimpleUser = Database["public"]["Tables"]["users"]["Row"];

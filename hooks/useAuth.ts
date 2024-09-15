@@ -88,6 +88,8 @@ const useAuth = (): UseAuth => {
       const { data: authListener } = supabase.auth.onAuthStateChange(
         (event, session) => {
           if (event === "SIGNED_IN") {
+            // console.log("ACABA DE INICIAR SESSION");
+
             if (session?.user) {
               const confirmedEmailDate = session.user.email_confirmed_at
                 ? new Date(session.user.email_confirmed_at)
@@ -100,6 +102,8 @@ const useAuth = (): UseAuth => {
                   "isNewlyVerified",
                   isNewlyVerified ? "true" : "false"
                 );
+
+                setUser(session.user);
               }
               // Email not confirmed yet
               else {
