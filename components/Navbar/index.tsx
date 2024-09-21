@@ -1,4 +1,3 @@
-import { HStack, Stack, Link as ChakraLink, Box, Text } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { UserButtonNavbar } from "./userButtonNavbar";
 import { LoginButtonNavbar } from "./loginButtonNavbar";
@@ -15,41 +14,43 @@ export const Navbar = () => {
   }, [user]);
 
   return (
-    <HStack
-      w="full"
-      px={4}
-      alignItems="center"
-      justifyContent="space-between"
-      position="relative"
-      zIndex={2}
-      height={HEADER_HEIGHT}
+    <div
+      className="mx-auto mt-5"
+      style={{
+        width: "100%",
+        maxWidth: "1000px",
+        padding: "0 16px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        position: "relative",
+        zIndex: 2,
+      }}
     >
-      <Text fontSize="xl" fontWeight="bold" zIndex={2}>
-        LOGO
-      </Text>
+      <p style={{ fontSize: "24px", fontWeight: "bold", zIndex: 2 }}>LOGO</p>
 
-      <Stack
-        direction={{ md: "row", base: "row", sm: "column" }}
-        spacing={4}
-        position="absolute"
-        left={0}
-        right={0}
-        display="flex"
-        justify="center"
-        alignItems="center"
-        zIndex={1}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "center",
+          alignItems: "center",
+          position: "absolute",
+          left: 0,
+          right: 0,
+          zIndex: 1,
+          gap: "16px",
+        }}
       >
-        <ChakraLink as={NextLink} href="/map">
+        <NextLink href="/map" passHref>
           Map
-        </ChakraLink>
-        <ChakraLink as={NextLink} href="/about">
+        </NextLink>
+        <NextLink href="/about" passHref>
           About
-        </ChakraLink>
-      </Stack>
+        </NextLink>
+      </div>
 
-      <Box zIndex={2}>
-        {isLoggedIn ? <UserButtonNavbar /> : <LoginButtonNavbar />}
-      </Box>
-    </HStack>
+      <div style={{ zIndex: 2 }}>{isLoggedIn ? <UserButtonNavbar /> : <LoginButtonNavbar />}</div>
+    </div>
   );
 };

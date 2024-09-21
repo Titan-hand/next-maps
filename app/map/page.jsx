@@ -1,6 +1,5 @@
 "use client";
 import dynamic from "next/dynamic";
-import { Box } from "@chakra-ui/react"
 import MapLoader from "@/components/MapLoader";
 
 export const LazyMap = dynamic(() => import("./LeafletMap"), {
@@ -10,8 +9,8 @@ export const LazyMap = dynamic(() => import("./LeafletMap"), {
 
 export default function Page() {
   return (
-    <Box flex={1}>
-      <LazyMap/>
-    </Box>
+    <div flex={1}>
+      <LazyMap />
+    </div>
   );
 }

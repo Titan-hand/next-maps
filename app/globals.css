@@ -1,3 +1,51 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box !important;
+}
+
+.landing-title {
+  font-size: 3.5rem;
+  font-weight: bolder;
+  text-align: center;
+  line-height: 1;
+  margin-top: 1rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .gradient-text_anim {
+    animation: move-bg 8s linear infinite;
+  }
+}
+
+@supports (--css: variables) {
+  .gradient-text_anim {
+    background: #fcadfe;
+    background: linear-gradient(
+        244.22deg,
+        #61d3ff 4.88%,
+        #fcadfe 40.37%,
+        #9381f5 57.46%,
+        #e8f0d0 87.65%,
+        #61d3ff
+      )
+      0 0 / 300% 100%;
+    background-repeat: repeat-x;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+}
+
+@keyframes move-bg {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 100% 0;
+  }
+}

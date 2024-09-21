@@ -3,13 +3,6 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import { use100vh } from "react-div-100vh";
-import {
-  Input,
-  Box,
-  InputRightElement,
-  InputGroup,
-  Button,
-} from "@chakra-ui/react";
 import { useGeolocation } from "@uidotdev/usehooks";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { useEffect, useState } from "react";
@@ -21,10 +14,12 @@ import { HEADER_HEIGHT } from "@/const/stylesConst";
 export default function LeafletMap() {
   const h = use100vh();
   const { latitude, longitude, loading, error } = useGeolocation();
-  const { address, isLoading, isError, getCoords, isLoadingCoords } =
-    useUbication();
-  const [addressInput, setAddressInput] = useState("");
-  const [coords, setCoords] = useState({
+  const { address, isLoading, isError, getCoords, isLoadingCoords } = useUbication();
+  const [addressInput, setAddressInput] = useState<string>("");
+  const [coords, setCoords] = useState<{
+    latitude: number | null;
+    longitude: number | null;
+  }>({
     latitude,
     longitude,
   });
@@ -75,43 +70,40 @@ export default function LeafletMap() {
         </Marker>
         <RecenterAutomatically lat={coords.latitude!} lng={coords.longitude!} />
       </MapContainer>
-      <Box
-        position="fixed"
-        bottom={10}
-        zIndex={999}
-        width="100%"
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
+      <div
+        style={{
+          position: "fixed",
+          bottom: "10px",
+          zIndex: 999,
+          width: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
       >
-        <InputGroup
-          size="md"
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          width="50%"
-        >
-          <Input
+        <div style={{ display: "flex", alignItems: "center", width: "50%" }}>
+          <input
             disabled={isLoadingCoords}
-            pr="4.5rem"
-            backgroundColor={"#fff"}
-            color={"#000"}
+            style={{
+              paddingRight: "4.5rem",
+              backgroundColor: "#fff",
+              color: "#000",
+              width: "100%",
+              height: "2.5rem",
+            }}
             placeholder="Enter address"
             value={addressInput}
             onChange={(e) => setAddressInput(e.target.value)}
           />
-          <InputRightElement width="5rem">
-            <Button
-              h="1.75rem"
-              size="sm"
-              onClick={onSearchAddress}
-              isLoading={isLoadingCoords}
-            >
-              Search
-            </Button>
-          </InputRightElement>
-        </InputGroup>
-      </Box>
+          <button
+            style={{ height: "2.5rem", marginLeft: "0.5rem", padding: "0 1rem" }}
+            onClick={onSearchAddress}
+            disabled={isLoadingCoords}
+          >
+            {isLoadingCoords ? "Loading..." : "Search"}
+          </button>
+        </div>
+      </div>
     </>
   );
 }

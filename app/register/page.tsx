@@ -1,24 +1,4 @@
 "use client";
-import {
-  Box,
-  Button,
-  Container,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Icon,
-  Input,
-  InputGroup,
-  InputRightElement,
-  VStack,
-  useToast,
-  IconButton,
-  HStack,
-  Alert,
-  AlertIcon,
-  AlertTitle,
-  AlertDescription,
-} from "@chakra-ui/react";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FiArrowRight, FiEye, FiEyeOff } from "react-icons/fi";
@@ -41,12 +21,10 @@ const SignUp = () => {
     passwordRepeat: string;
   }>();
   const { user, signUp } = useAuth();
-  const toast = useToast();
   const supabase = createClient();
 
   const [showPass, setShowPass] = useState<boolean>(false);
   const [showPass2, setShowPass2] = useState<boolean>(false);
-
   const [loading, setLoading] = useState<boolean>(false);
   const [signUpError, setSignUpError] = useState<boolean>(false);
   const [signUpSuccess, setSignUpSuccess] = useState<boolean>(false);
@@ -57,15 +35,15 @@ const SignUp = () => {
   const onSubmit = handleSubmit(async (validFormData) => {
     try {
       setLoading(true);
-      setSignUpError(() => false);
-      setSignUpSuccess(() => false);
+      setSignUpError(false);
+      setSignUpSuccess(false);
 
       const { email, password } = validFormData;
 
       const { error, user } = await signUp({ email, password });
 
       if (error) {
-        setSignUpError(() => true);
+        setSignUpError(true);
         return;
       }
 
@@ -78,34 +56,15 @@ const SignUp = () => {
 
       if (dbError) {
         console.error(dbError);
-        toast({
-          title: "Error creating user!",
-          description: "Something went wrong",
-          status: "error",
-          position: "top",
-        });
-        setSignUpError(() => true);
-        setSignUpSuccess(() => false);
+        setSignUpError(true);
+        setSignUpSuccess(false);
         return;
       }
 
-      toast({
-        title: "Success",
-        description: "Please check your email to verify your account!",
-        status: "success",
-        position: "top",
-      });
-
-      setSignUpSuccess(() => true);
+      setSignUpSuccess(true);
     } catch (error) {
-      toast({
-        title: "Error creating user!",
-        description: "Something went wrong",
-        status: "error",
-        position: "top",
-      });
-      setSignUpError(() => true);
-      setSignUpSuccess(() => false);
+      setSignUpError(true);
+      setSignUpSuccess(false);
     } finally {
       setLoading(false);
     }
@@ -117,164 +76,141 @@ const SignUp = () => {
   }
 
   return (
-    <Container
-      maxW="container.sm"
-      py="10"
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      h="full"
-      overflow="hidden"
+    <div
+      style={{
+        maxWidth: "600px",
+        margin: "auto",
+        padding: "20px",
+        display: "flex",
+        alignItems: "center",
+      }}
     >
-      <Box w="full">
-        <Box
-          rounded="xl"
-          px="5"
-          pt="12"
-          flex="1"
-          textAlign="center"
-          shadow="xl"
-          border="1px solid #acacac1c"
+      <div style={{ width: "100%" }}>
+        <div
+          style={{
+            padding: "20px",
+            textAlign: "center",
+            boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+            borderRadius: "10px",
+          }}
         >
-          <Box py="5">
-            <form onSubmit={onSubmit} autoComplete="off">
-              <VStack spacing="4">
-                {signUpError && (
-                  <Alert status="error">
-                    <AlertIcon />
-                    <AlertTitle>Error creating user!</AlertTitle>
-                  </Alert>
-                )}
-                {signUpSuccess && (
-                  <Alert status="success">
-                    <AlertIcon />
-                    <AlertTitle>Account created!</AlertTitle>
-                    <AlertDescription>
-                      Please check your email to verify account
-                    </AlertDescription>
-                  </Alert>
-                )}
-                {/* Email */}
-                <FormControl isInvalid={errors.email ? true : false} isRequired>
-                  <FormLabel htmlFor="email">Email</FormLabel>
-                  <Input
-                    type="email"
-                    {...register("email", {
-                      required: {
-                        value: true,
-                        message: "Email is required",
-                      },
-                      pattern: {
-                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                        message: "Invalid email address",
-                      },
+          <form onSubmit={onSubmit} autoComplete="off">
+            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+              {signUpError && (
+                <div style={{ color: "red" }}>
+                  <p>Error creating user!</p>
+                </div>
+              )}
+              {signUpSuccess && (
+                <div style={{ color: "green" }}>
+                  <p>Account created! Please check your email to verify your account.</p>
+                </div>
+              )}
+              {/* Email */}
+              <div>
+                <label htmlFor="email">Email</label>
+                <input
+                  type="email"
+                  {...register("email", {
+                    required: "Email is required",
+                    pattern: {
+                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                      message: "Invalid email address",
+                    },
+                  })}
+                  style={{ width: "100%", padding: "8px", fontSize: "16px" }}
+                />
+                {errors.email && <p style={{ color: "red" }}>{errors.email.message}</p>}
+              </div>
+              {/* Password */}
+              <div>
+                <label htmlFor="password">Password</label>
+                <div style={{ position: "relative" }}>
+                  <input
+                    type={showPass ? "text" : "password"}
+                    {...register("password", {
+                      required: "Password is required",
                     })}
-                    size="lg"
+                    style={{ width: "100%", padding: "8px", fontSize: "16px" }}
                   />
-                  {errors.email && (
-                    <FormErrorMessage textAlign="left">
-                      {errors.email.message}
-                    </FormErrorMessage>
-                  )}
-                </FormControl>
-                {/* Password */}
-                <FormControl
-                  isInvalid={errors.password ? true : false}
-                  isRequired
-                >
-                  <FormLabel htmlFor="password">Password</FormLabel>
-                  <InputGroup>
-                    <Input
-                      type={showPass ? "text" : "password"}
-                      {...register("password", {
-                        required: {
-                          value: true,
-                          message: "Password is required",
-                        },
-                      })}
-                      size="lg"
-                    />
-                    <InputRightElement width="5.5rem" mt="4px" mr="4px">
-                      <IconButton
-                        size="sm"
-                        onClick={handleToggleShowPassword}
-                        icon={showPass ? <FiEyeOff /> : <FiEye />}
-                        aria-label="Show password"
-                        title={showPass ? "Hide password" : "Show password"}
-                        bg="gray.300"
-                      />
-                    </InputRightElement>
-                  </InputGroup>
-                  {errors.password && (
-                    <FormErrorMessage textAlign="left">
-                      {errors.password.message}
-                    </FormErrorMessage>
-                  )}
-                </FormControl>
-                {/* Password Repeat*/}
-                <FormControl
-                  isInvalid={errors.passwordRepeat ? true : false}
-                  isRequired
-                >
-                  <FormLabel htmlFor="passwordRepeat">
-                    Repeat Password
-                  </FormLabel>
-                  <InputGroup>
-                    <Input
-                      type={showPass2 ? "text" : "password"}
-                      {...register("passwordRepeat", {
-                        required: true,
-                        validate: (value) =>
-                          value === watch("password") ||
-                          "Passwords do not match",
-                      })}
-                      size="lg"
-                    />
-                    <InputRightElement width="5.5rem" mt="4px" mr="4px">
-                      <IconButton
-                        size="sm"
-                        onClick={handleToggleShowPassword2}
-                        icon={showPass2 ? <FiEyeOff /> : <FiEye />}
-                        aria-label="Show password"
-                        title={showPass2 ? "Hide password" : "Show password"}
-                        bg="gray.300"
-                      />
-                    </InputRightElement>
-                  </InputGroup>
-                  {errors.passwordRepeat && (
-                    <FormErrorMessage textAlign="left">
-                      {errors.passwordRepeat.message}
-                    </FormErrorMessage>
-                  )}
-                </FormControl>
-                <VStack w="100%">
-                  <Button
-                    mt={4}
-                    type="submit"
-                    size="lg"
-                    w="100%"
-                    colorScheme="blue"
-                    isLoading={loading}
-                    rightIcon={<Icon as={FiArrowRight} fontSize="xl" />}
+                  <button
+                    type="button"
+                    onClick={handleToggleShowPassword}
+                    style={{
+                      position: "absolute",
+                      right: "10px",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      border: "none",
+                      background: "none",
+                    }}
                   >
-                    Sign Up
-                  </Button>
-                </VStack>
-              </VStack>
-            </form>
-            {/* Link to login */}
-            <HStack justify="center" mt="5">
-              <Link href="/login">
-                <HStack justify="center" _hover={{ textDecor: "underline" }}>
-                  <Box>Already have an account?</Box>
-                  <Box color="blue.300">Login</Box>
-                </HStack>
-              </Link>
-            </HStack>
-          </Box>
-        </Box>
-      </Box>
-    </Container>
+                    {showPass ? <FiEyeOff /> : <FiEye />}
+                  </button>
+                </div>
+                {errors.password && <p style={{ color: "red" }}>{errors.password.message}</p>}
+              </div>
+              {/* Password Repeat */}
+              <div>
+                <label htmlFor="passwordRepeat">Repeat Password</label>
+                <div style={{ position: "relative" }}>
+                  <input
+                    type={showPass2 ? "text" : "password"}
+                    {...register("passwordRepeat", {
+                      required: true,
+                      validate: (value) => value === watch("password") || "Passwords do not match",
+                    })}
+                    style={{ width: "100%", padding: "8px", fontSize: "16px" }}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleToggleShowPassword2}
+                    style={{
+                      position: "absolute",
+                      right: "10px",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      border: "none",
+                      background: "none",
+                    }}
+                  >
+                    {showPass2 ? <FiEyeOff /> : <FiEye />}
+                  </button>
+                </div>
+                {errors.passwordRepeat && (
+                  <p style={{ color: "red" }}>{errors.passwordRepeat.message}</p>
+                )}
+              </div>
+              <div>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    backgroundColor: "blue",
+                    color: "white",
+                    fontSize: "18px",
+                    borderRadius: "5px",
+                    cursor: "pointer",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  Sign Up
+                  <FiArrowRight style={{ marginLeft: "8px", fontSize: "20px" }} />
+                </button>
+              </div>
+            </div>
+          </form>
+
+          <div style={{ marginTop: "16px", display: "flex", justifyContent: "center", gap: "8px" }}>
+            <Link href="/login">Login</Link>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

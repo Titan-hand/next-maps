@@ -13,7 +13,7 @@ export const getAddressFromLatLng = async (
 export const getCoordsFromAddress = async (
   address: string
 ): Promise<{ latitude: number; longitude: number }> => {
-  const url = `https://api.geoapify.com/v1/geocode/search?text=${address}&format=json&apiKey=${process.env.OPEN_MAPS_API_KEY}`;
+  const url = `https://api.geoapify.com/v1/geocode/search?text=${address}&format=json&apiKey=${process.env.NEXT_PUBLIC_OPEN_MAPS_API_KEY}`;
   const response = await axios.get(url);
   const data = response.data?.results?.[0];
 
