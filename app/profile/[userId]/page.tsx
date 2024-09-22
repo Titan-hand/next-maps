@@ -2,11 +2,9 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams } from "next/navigation";
 import { FiEdit } from "react-icons/fi";
-// Custom hooks
 import useStorage from "@/hooks/useStorage";
 import useAuth from "@/hooks/useAuth";
 import { createClient } from "@/utils/supabase/client";
-// Types and interfaces
 import { PlaceUploaded, SimpleUser } from "@/types";
 
 const initialPlaces: PlaceUploaded[] = [
@@ -27,13 +25,10 @@ const initialPlaces: PlaceUploaded[] = [
 ];
 
 export default function Profile() {
-  // Next.js hooks
   const { userId } = useParams();
-  // Supabase hooks
   const supabase = createClient();
   const { user } = useAuth();
   const { uploadFile } = useStorage();
-  // Local state
   const [isOwner, setIsOwner] = useState(false);
   const [userData, setUserData] = useState<SimpleUser | null>(null);
   const [loadingUserData, setLoadingUserData] = useState<boolean>(false);
@@ -91,99 +86,64 @@ export default function Profile() {
     }
   }, [userId]);
 
-  // Get user data
   useEffect(() => {
     getUserData();
   }, [getUserData]);
 
-  // Check if the user is the owner of the profile
   useEffect(() => {
     if (userData && user) setIsOwner(user.id === userData.id);
   }, [userData, user]);
 
   return (
-    <div style={{ maxWidth: "800px", margin: "auto", padding: "8px" }}>
-      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-        <div style={{ display: "flex", gap: "8px" }}>
-          <div style={{ position: "relative", overflow: "hidden", cursor: "pointer" }}>
-            {/* Avatar Image */}
+    <div className="max-w-[800px] mx-auto p-2">
+      <div className="flex flex-col gap-2">
+        <div className="flex gap-2">
+          <div className="relative overflow-hidden cursor-pointer">
             <img
               alt={userData?.username || "User"}
               src={userData?.avatar_url || ""}
-              style={{ width: "100px", height: "100px", borderRadius: "50%" }}
+              className="w-[100px] h-[100px] rounded-full"
               onClick={() => setIsModalOpen(true)}
             />
 
-            {/* File Input for Avatar Upload (visible only if user is owner) */}
             {isOwner && (
               <input
                 type="file"
                 accept="image/*"
                 onChange={handleAvatarUpload}
-                style={{
-                  position: "absolute",
-                  top: "0",
-                  left: "0",
-                  opacity: 0,
-                  width: "100%",
-                  height: "100%",
-                  cursor: "pointer",
-                  zIndex: 2,
-                }}
+                className="absolute top-0 left-0 opacity-0 w-full h-full cursor-pointer z-10"
                 onMouseOver={() => setShowAvatarOverlay(true)}
                 onMouseLeave={() => setShowAvatarOverlay(false)}
               />
             )}
 
-            {/* Hover Overlay (visible only if user is owner) */}
             {isOwner && (
               <div
-                style={{
-                  position: "absolute",
-                  top: "0",
-                  left: "0",
-                  width: "100%",
-                  height: "100%",
-                  backgroundColor: "black",
-                  opacity: showAvatarOverlay ? 0.6 : 0,
-                  borderRadius: "50%",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  zIndex: 1,
-                  transition: "opacity 0.3s ease",
-                }}
+                className={`absolute top-0 left-0 w-full h-full bg-black ${
+                  showAvatarOverlay ? "opacity-60" : "opacity-0"
+                } rounded-full flex justify-center items-center z-0 transition-opacity duration-300`}
               >
                 <FiEdit color="white" size={30} />
               </div>
             )}
           </div>
 
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "start" }}>
-            <p style={{ fontSize: "2xl", fontWeight: "bold" }}>{userData?.username}</p>
-            {isOwner && <button style={{ fontSize: "sm" }}>Add New Place</button>}
+          <div className="flex-1 flex flex-col items-start">
+            <p className="text-2xl font-bold">{userData?.username}</p>
+            {isOwner && <button className="text-sm">Add New Place</button>}
           </div>
         </div>
 
         <div>
-          <p style={{ fontSize: "xl", fontWeight: "bold", marginBottom: "16px" }}>My Places</p>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
-              gap: "16px",
-            }}
-          >
+          <p className="text-xl font-bold mb-4">My Places</p>
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-4">
             {places.map((place) => (
-              <div
-                key={place.id}
-                style={{ borderWidth: "1px", borderRadius: "8px", overflow: "hidden" }}
-              >
-                <img src={place.image_url} alt={place.name} style={{ width: "100%" }} />
-                <div style={{ padding: "16px" }}>
-                  <p style={{ fontWeight: "bold" }}>{place.name}</p>
-                  <p style={{ fontSize: "sm" }}>{place.description}</p>
-                  {isOwner && <button style={{ fontSize: "sm", marginTop: "8px" }}>Edit</button>}
+              <div key={place.id} className="border border-gray-300 rounded-lg overflow-hidden">
+                <img src={place.image_url} alt={place.name} className="w-full" />
+                <div className="p-4">
+                  <p className="font-bold">{place.name}</p>
+                  <p className="text-sm">{place.description}</p>
+                  {isOwner && <button className="text-sm mt-2">Edit</button>}
                 </div>
               </div>
             ))}
@@ -191,44 +151,20 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* Modal */}
       {isModalOpen && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            backgroundColor: "rgba(0,0,0,0.5)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: "white",
-              padding: "20px",
-              borderRadius: "8px",
-              width: "400px",
-            }}
-          >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div className="fixed top-0 left-0 w-full h-full bg-[rgba(0,0,0,0.5)] flex justify-center items-center">
+          <div className="bg-white p-5 rounded-lg w-[400px]">
+            <div className="flex justify-between items-center">
               <h2>The place</h2>
               <button onClick={() => setIsModalOpen(false)}>X</button>
             </div>
-            <div
-              style={{ marginTop: "16px", display: "flex", flexDirection: "column", gap: "8px" }}
-            >
+            <div className="mt-4 flex flex-col gap-2">
               <input placeholder="Place Name" value={""} />
               <textarea placeholder="Description" value={""} />
               <input placeholder="Image URL" value={""} />
             </div>
-            <div
-              style={{ marginTop: "16px", display: "flex", justifyContent: "flex-end", gap: "8px" }}
-            >
-              <button style={{ backgroundColor: "blue", color: "white" }}>Save</button>
+            <div className="mt-4 flex justify-end gap-2">
+              <button className="bg-blue-500 text-white">Save</button>
               <button onClick={() => setIsModalOpen(false)}>Cancel</button>
             </div>
           </div>

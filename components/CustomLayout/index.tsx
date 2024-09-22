@@ -1,16 +1,9 @@
 "use client";
-
 import { Navbar } from "@/components/Navbar";
+
 export const CustomLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div
-      style={{
-        overflow: "hidden",
-        display: "flex",
-        flexDirection: "column",
-        width: "100%",
-      }}
-    >
+    <div className="overflow-hidden flex flex-col w-full">
       <Navbar />
       {children}
     </div>

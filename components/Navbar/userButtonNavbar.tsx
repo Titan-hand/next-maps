@@ -27,109 +27,56 @@ export const UserButtonNavbar = () => {
   }, [user, supabase]);
 
   return (
-    <div
-      style={{ display: "flex", justifyContent: "space-between", padding: "20px" }}
-      id="header-nav-container"
-    >
+    <div className="flex justify-between p-5" id="header-nav-container">
       <div></div>
-      <div style={{ display: "flex", justifyContent: "flex-end", gap: "16px" }}>
-        <div style={{ position: "relative", cursor: "pointer" }}>
+      <div className="flex justify-end gap-4">
+        <div className="relative cursor-pointer">
           <div
             onClick={() => document.getElementById("user-menu")?.classList.toggle("open")}
-            style={{
-              padding: "8px",
-              borderRadius: "8px",
-              transition: "all 0.2s",
-              display: "flex",
-              alignItems: "center",
-            }}
+            className="p-2 rounded-lg transition-all flex items-center"
           >
-            <div style={{ display: "flex", alignItems: "center" }}>
+            <div className="flex items-center">
               <img
                 src={userBasicData?.avatar_url || ""}
-                alt={user?.email}
-                style={{ width: "32px", height: "32px", borderRadius: "50%", marginRight: "8px" }}
+                alt={user?.email || "User"}
+                className="w-8 h-8 rounded-full mr-2"
               />
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-start",
-                  marginRight: "8px",
-                }}
-              >
-                <p style={{ fontSize: "12px", color: "gray" }}>{user?.email}</p>
+              <div className="flex flex-col items-start mr-2">
+                <p className="text-xs text-gray-500">{user?.email}</p>
               </div>
               <FiChevronDown />
             </div>
           </div>
           <div
             id="user-menu"
-            style={{
-             
-              position: "absolute",
-              top: "100%",
-              right: 0,
-              backgroundColor: "white",
-              boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
-              borderRadius: "8px",
-              zIndex: 10,
-              overflow: "hidden",
-              transition: "all 0.3s",
-            }}
-            className="menu-list"
+            className="absolute top-full right-0 bg-white shadow-md rounded-lg z-10 overflow-hidden transition-all"
           >
-            <div
-              style={{
-                padding: "8px",
-                display: "flex",
-                alignItems: "center",
-                cursor: "pointer",
-                backgroundColor: "white",
-              }}
-            >
+            <div className="p-2 flex items-center cursor-pointer bg-white">
               <img
                 src={userBasicData?.avatar_url || ""}
-                alt={user?.email}
-                style={{ width: "48px", height: "48px", borderRadius: "50%", marginRight: "8px" }}
+                alt={user?.email || "User"}
+                className="w-12 h-12 rounded-full mr-2"
               />
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-                <p style={{ fontSize: "14px", color: "black" }}>
+              <div className="flex flex-col items-start">
+                <p className="text-base text-black">
                   {user?.user_metadata.first_name || ""} {user?.user_metadata.last_name || ""}
                 </p>
               </div>
             </div>
 
-            <hr style={{ margin: "8px 0" }} />
+            <hr className="my-2" />
 
             <NextLink
               href={`/profile/${user?.id}`}
-              style={{
-                padding: "8px 16px",
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                cursor: "pointer",
-                textDecoration: "none",
-                color: "black",
-              }}
+              className="px-4 py-2 flex items-center gap-2 cursor-pointer text-black"
             >
-              <div>
-                <FiUser />
-                Profile
-              </div>
+              <FiUser />
+              Profile
             </NextLink>
 
             <div
               onClick={logout}
-              style={{
-                padding: "8px 16px",
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                cursor: "pointer",
-                color: "black",
-              }}
+              className="px-4 py-2 flex items-center gap-2 cursor-pointer text-black"
             >
               <FiLogOut />
               Sign out

@@ -9,7 +9,6 @@ import { createClient } from "@/utils/supabase/client";
 import Link from "next/link";
 
 const SignUp = () => {
-  // React hook form
   const {
     register,
     handleSubmit,
@@ -47,7 +46,6 @@ const SignUp = () => {
         return;
       }
 
-      // Register user in database
       const { error: dbError } = await supabase.from("users").insert({
         id: user?.id || window.crypto.randomUUID(),
         username: user?.email || window.crypto.randomUUID(),
@@ -70,43 +68,26 @@ const SignUp = () => {
     }
   });
 
-  // Redirect if user is already logged in
   if (user) {
     redirect("/");
   }
 
   return (
-    <div
-      style={{
-        maxWidth: "600px",
-        margin: "auto",
-        padding: "20px",
-        display: "flex",
-        alignItems: "center",
-      }}
-    >
-      <div style={{ width: "100%" }}>
-        <div
-          style={{
-            padding: "20px",
-            textAlign: "center",
-            boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
-            borderRadius: "10px",
-          }}
-        >
+    <div className="max-w-lg mx-auto p-5 flex items-center">
+      <div className="w-full">
+        <div className="p-5 text-center shadow-lg rounded-lg">
           <form onSubmit={onSubmit} autoComplete="off">
-            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            <div className="flex flex-col gap-4">
               {signUpError && (
-                <div style={{ color: "red" }}>
+                <div className="text-red-500">
                   <p>Error creating user!</p>
                 </div>
               )}
               {signUpSuccess && (
-                <div style={{ color: "green" }}>
+                <div className="text-green-500">
                   <p>Account created! Please check your email to verify your account.</p>
                 </div>
               )}
-              {/* Email */}
               <div>
                 <label htmlFor="email">Email</label>
                 <input
@@ -118,94 +99,67 @@ const SignUp = () => {
                       message: "Invalid email address",
                     },
                   })}
-                  style={{ width: "100%", padding: "8px", fontSize: "16px" }}
+                  className="w-full p-2 text-lg border rounded-md"
                 />
-                {errors.email && <p style={{ color: "red" }}>{errors.email.message}</p>}
+                {errors.email && <p className="text-red-500">{errors.email.message}</p>}
               </div>
-              {/* Password */}
               <div>
                 <label htmlFor="password">Password</label>
-                <div style={{ position: "relative" }}>
+                <div className="relative">
                   <input
                     type={showPass ? "text" : "password"}
                     {...register("password", {
                       required: "Password is required",
                     })}
-                    style={{ width: "100%", padding: "8px", fontSize: "16px" }}
+                    className="w-full p-2 text-lg border rounded-md"
                   />
                   <button
                     type="button"
                     onClick={handleToggleShowPassword}
-                    style={{
-                      position: "absolute",
-                      right: "10px",
-                      top: "50%",
-                      transform: "translateY(-50%)",
-                      border: "none",
-                      background: "none",
-                    }}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-none border-none"
                   >
                     {showPass ? <FiEyeOff /> : <FiEye />}
                   </button>
                 </div>
-                {errors.password && <p style={{ color: "red" }}>{errors.password.message}</p>}
+                {errors.password && <p className="text-red-500">{errors.password.message}</p>}
               </div>
-              {/* Password Repeat */}
               <div>
                 <label htmlFor="passwordRepeat">Repeat Password</label>
-                <div style={{ position: "relative" }}>
+                <div className="relative">
                   <input
                     type={showPass2 ? "text" : "password"}
                     {...register("passwordRepeat", {
                       required: true,
                       validate: (value) => value === watch("password") || "Passwords do not match",
                     })}
-                    style={{ width: "100%", padding: "8px", fontSize: "16px" }}
+                    className="w-full p-2 text-lg border rounded-md"
                   />
                   <button
                     type="button"
                     onClick={handleToggleShowPassword2}
-                    style={{
-                      position: "absolute",
-                      right: "10px",
-                      top: "50%",
-                      transform: "translateY(-50%)",
-                      border: "none",
-                      background: "none",
-                    }}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-none border-none"
                   >
                     {showPass2 ? <FiEyeOff /> : <FiEye />}
                   </button>
                 </div>
                 {errors.passwordRepeat && (
-                  <p style={{ color: "red" }}>{errors.passwordRepeat.message}</p>
+                  <p className="text-red-500">{errors.passwordRepeat.message}</p>
                 )}
               </div>
               <div>
                 <button
                   type="submit"
                   disabled={loading}
-                  style={{
-                    width: "100%",
-                    padding: "12px",
-                    backgroundColor: "blue",
-                    color: "white",
-                    fontSize: "18px",
-                    borderRadius: "5px",
-                    cursor: "pointer",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
+                  className="w-full p-3 bg-blue-600 text-white text-lg rounded-md flex justify-center items-center"
                 >
                   Sign Up
-                  <FiArrowRight style={{ marginLeft: "8px", fontSize: "20px" }} />
+                  <FiArrowRight className="ml-2 text-xl" />
                 </button>
               </div>
             </div>
           </form>
 
-          <div style={{ marginTop: "16px", display: "flex", justifyContent: "center", gap: "8px" }}>
+          <div className="mt-4 flex justify-center gap-2">
             <Link href="/login">Login</Link>
           </div>
         </div>

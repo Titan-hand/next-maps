@@ -54,7 +54,8 @@ export default function LeafletMap() {
         }}
         zoom={13}
         scrollWheelZoom={true}
-        style={{ height: `calc(${h}px - ${HEADER_HEIGHT})`, width: "100%" }}
+        className="w-full"
+        style={{ height: `calc(${h}px - ${HEADER_HEIGHT})` }}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -70,36 +71,16 @@ export default function LeafletMap() {
         </Marker>
         <RecenterAutomatically lat={coords.latitude!} lng={coords.longitude!} />
       </MapContainer>
-      <div
-        style={{
-          position: "fixed",
-          bottom: "10px",
-          zIndex: 999,
-          width: "100%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", width: "50%" }}>
+      <div className="fixed bottom-2 z-[999] w-full flex items-center justify-center">
+        <div className="flex items-center w-1/2">
           <input
             disabled={isLoadingCoords}
-            style={{
-              paddingRight: "4.5rem",
-              backgroundColor: "#fff",
-              color: "#000",
-              width: "100%",
-              height: "2.5rem",
-            }}
+            className="pr-14 bg-white text-black w-full h-10"
             placeholder="Enter address"
             value={addressInput}
             onChange={(e) => setAddressInput(e.target.value)}
           />
-          <button
-            style={{ height: "2.5rem", marginLeft: "0.5rem", padding: "0 1rem" }}
-            onClick={onSearchAddress}
-            disabled={isLoadingCoords}
-          >
+          <button className="h-10 ml-2 px-4" onClick={onSearchAddress} disabled={isLoadingCoords}>
             {isLoadingCoords ? "Loading..." : "Search"}
           </button>
         </div>

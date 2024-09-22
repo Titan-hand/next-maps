@@ -21,14 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
 
       <body>
-        <main
-          style={{
-            width: "100%",
-            display: "flex",
-            flexDirection: "column",
-            overflow: "hidden",
-          }}
-        >
+        <main className="w-full flex flex-col overflow-hidden">
           <Providers>
             <CustomLayout>{children}</CustomLayout>
           </Providers>
