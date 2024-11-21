@@ -1,7 +1,7 @@
-import { Providers } from "./providers";
+import { Providers } from "../providers";
 import { GeistSans } from "geist/font/sans";
 import { CustomLayout } from "@/components/CustomLayout";
-import "./globals.css";
+import "../globals.css";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
