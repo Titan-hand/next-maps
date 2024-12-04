@@ -7,7 +7,7 @@ import { useGeolocation } from "@uidotdev/usehooks";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { useEffect, useState } from "react";
 import MapLoader from "@/components/MapLoader";
-import useUbication from "../../hooks/useUbication";
+import useUbication from "../../../hooks/useUbication";
 import RecenterAutomatically from "./RecenterAutomatically";
 import { HEADER_HEIGHT } from "@/const/stylesConst";
 
