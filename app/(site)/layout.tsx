@@ -1,7 +1,4 @@
-import { Providers } from "../providers";
-import { GeistSans } from "geist/font/sans";
 import { CustomLayout } from "@/components/CustomLayout";
-import "../globals.css";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -15,18 +12,8 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${GeistSans.className} dark`}>
-      <head>
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-      </head>
-
-      <body>
-        <main className="w-full flex flex-col overflow-hidden">
-          <Providers>
-            <CustomLayout>{children}</CustomLayout>
-          </Providers>
-        </main>
-      </body>
-    </html>
+    <main className="w-full flex flex-col overflow-hidden">
+      <CustomLayout>{children}</CustomLayout>
+    </main>
   );
 }

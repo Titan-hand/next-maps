@@ -6,10 +6,10 @@ import { use100vh } from "react-div-100vh";
 import { useGeolocation } from "@uidotdev/usehooks";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { useEffect, useState } from "react";
+import { Input, Button } from "@nextui-org/react";
 import MapLoader from "@/components/MapLoader";
 import useUbication from "../../../hooks/useUbication";
 import RecenterAutomatically from "./RecenterAutomatically";
-import { HEADER_HEIGHT } from "@/const/stylesConst";
 
 export default function LeafletMap() {
   const h = use100vh();
@@ -55,7 +55,7 @@ export default function LeafletMap() {
         zoom={13}
         scrollWheelZoom={true}
         className="w-full"
-        style={{ height: `calc(${h}px - ${HEADER_HEIGHT})` }}
+        style={{ height: h }}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -73,16 +73,20 @@ export default function LeafletMap() {
       </MapContainer>
       <div className="fixed bottom-2 z-[999] w-full flex items-center justify-center">
         <div className="flex items-center w-1/2">
-          <input
+          <Input
             disabled={isLoadingCoords}
-            className="pr-14 bg-white text-black w-full h-10"
             placeholder="Enter address"
             value={addressInput}
             onChange={(e) => setAddressInput(e.target.value)}
           />
-          <button className="h-10 ml-2 px-4" onClick={onSearchAddress} disabled={isLoadingCoords}>
+          <Button
+            className="ml-2"
+            onClick={onSearchAddress}
+            disabled={isLoadingCoords}
+            isLoading={isLoadingCoords}
+          >
             {isLoadingCoords ? "Loading..." : "Search"}
-          </button>
+          </Button>
         </div>
       </div>
     </>
