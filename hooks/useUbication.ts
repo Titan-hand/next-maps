@@ -4,8 +4,13 @@ import { getAddressFromLatLng, getCoordsFromAddress } from "../utils/api";
 import { useGeolocation } from "@uidotdev/usehooks";
 
 const useUbication = (enable = true) => {
-  const { latitude, longitude } = useGeolocation();
-  const { data: address, ...args } = useQuery({
+  const { latitude, longitude, error, loading } = useGeolocation();
+  const {
+    data: address,
+    error: errorQuery,
+    isLoading: isLoadingQuery,
+    ...args
+  } = useQuery({
     queryKey: ["ubication"],
     queryFn: async () => {
       const data = await getAddressFromLatLng(latitude as number, longitude as number);
@@ -45,6 +50,10 @@ const useUbication = (enable = true) => {
     coordsData,
     isLoadingCoords: mutation.isPending,
     isCoordsError: mutation.isError,
+    latitude,
+    longitude,
+    error: errorQuery || error,
+    isLoading: loading || isLoadingQuery,
     ...args,
   };
 };

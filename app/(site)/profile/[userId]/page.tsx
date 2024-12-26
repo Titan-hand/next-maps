@@ -6,23 +6,19 @@ import useStorage from "@/hooks/useStorage";
 import useAuth from "@/hooks/useAuth";
 import { createClient } from "@/utils/supabase/client";
 import { PlaceUploaded, SimpleUser } from "@/types";
+import { Card, CardBody, CardFooter, Image, Button, Pagination } from "@nextui-org/react";
+import usePagination from "@/hooks/usePagination";
 
-const initialPlaces: PlaceUploaded[] = [
-  {
-    id: "1",
+const initialPlaces = Array.from({ length: 102 }, (_, index) => {
+  const id = (index + 1).toString();
+  return {
+    id,
     uploaded_by_user_id: "1",
-    name: "Eiffel Tower",
-    description: "Iconic iron tower in Paris",
-    image_url: "https://picsum.photos/200",
-  },
-  {
-    id: "2",
-    uploaded_by_user_id: "1",
-    name: "Grand Canyon",
-    description: "Vast canyon in Arizona",
-    image_url: "https://picsum.photos/200",
-  },
-];
+    name: `Place ${id}`,
+    description: `Description for place ${id}`,
+    image_url: `https://picsum.photos/${200 + (index % 800)}`,
+  };
+});
 
 export default function Profile() {
   const { userId } = useParams();
@@ -36,6 +32,7 @@ export default function Profile() {
   const [places, setPlaces] = useState<PlaceUploaded[]>(initialPlaces);
   const [showAvatarOverlay, setShowAvatarOverlay] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { data, nextPage, previousPage , totalPages, setPage, currentPage} = usePagination(initialPlaces, 12);
 
   const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -95,8 +92,8 @@ export default function Profile() {
   }, [userData, user]);
 
   return (
-    <div className="max-w-[800px] mx-auto p-2">
-      <div className="flex flex-col gap-2">
+    <div className="max-w-[700px] w-full mx-auto p-2">
+      <div className="flex flex-col w-full gap-2">
         <div className="flex gap-2">
           <div className="relative overflow-hidden cursor-pointer">
             <img
@@ -133,22 +130,44 @@ export default function Profile() {
             {isOwner && <button className="text-sm">Add New Place</button>}
           </div>
         </div>
-
-        <div>
-          <p className="text-xl font-bold mb-4">My Places</p>
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-4">
-            {places.map((place) => (
-              <div key={place.id} className="border border-gray-300 rounded-lg overflow-hidden">
-                <img src={place.image_url} alt={place.name} className="w-full" />
-                <div className="p-4">
-                  <p className="font-bold">{place.name}</p>
-                  <p className="text-sm">{place.description}</p>
-                  {isOwner && <button className="text-sm mt-2">Edit</button>}
-                </div>
-              </div>
-            ))}
-          </div>
+        <Button onClick={nextPage}>Siguiente</Button>
+        <Button onClick={previousPage}>anterior</Button>
+        <div className="gap-2 grid grid-cols-2 sm:grid-cols-3 mt-10">
+          {data.map((item, index) => (
+            /* eslint-disable no-console */
+            <Card
+              key={index}
+              isPressable
+              shadow="sm"
+              className="mb-2"
+              onPress={() => console.log("item pressed")}
+            >
+              <CardBody className="overflow-visible p-0">
+                <Image
+                  alt={item.name}
+                  className="w-full object-cover h-[140px]"
+                  radius="lg"
+                  shadow="sm"
+                  src={item.image_url}
+                  width="100%"
+                />
+              </CardBody>
+              <CardFooter className="text-small items-start flex-col">
+                <b>{item.name}</b>
+                <p className="text-default-500 text-xs mt-1">{item.description}</p>
+              </CardFooter>
+            </Card>
+          ))}
         </div>
+        <Pagination
+          page={currentPage}
+          onChange={setPage}
+          total={totalPages}
+          className="my-5"
+          classNames={{
+            wrapper: "w-full max-w-full justify-center",
+          }}
+        />
       </div>
 
       {isModalOpen && (

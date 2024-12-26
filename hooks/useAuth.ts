@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { create } from "zustand";
 import type { User } from "@/types";
@@ -7,6 +7,7 @@ import { AuthError, Session } from "@supabase/supabase-js";
 interface UserState {
   user: User | null;
   setUser: (user: User | null) => void;
+  clearUser: () => void;
 }
 
 interface LoginParams {
@@ -15,7 +16,6 @@ interface LoginParams {
 }
 
 interface SignUpParams {
-  // The same as LoginParams for now
   email: string;
   password: string;
 }
@@ -23,11 +23,14 @@ interface SignUpParams {
 const useUserStore = create<UserState>((set) => ({
   user: null,
   setUser: (user) => set({ user }),
+  clearUser: () => set({ user: null }),
 }));
 
 interface UseAuth {
   user: User | null;
-  logout: () => void;
+  logout: () => Promise<void>;
+  isLoading: boolean;
+  error: string | null;
   signUp: ({ email, password }: SignUpParams) => Promise<{
     user: User | null;
     error: AuthError | null;
@@ -42,97 +45,115 @@ interface UseAuth {
 
 const useAuth = (): UseAuth => {
   const supabase = createClient();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { user, setUser, clearUser } = useUserStore();
 
-  const { user, setUser } = useUserStore((state) => ({
-    user: state.user,
-    setUser: state.setUser,
-  }));
+  const handleAuthStateChange = useCallback(
+    (event: string, session: Session | null) => {
+      if (event === "SIGNED_IN" && session?.user) {
+        const isNewlyVerified =
+          session.user.email_confirmed_at &&
+          new Date(session.user.email_confirmed_at).getTime() > Date.now() - 300000; // Verificado en los últimos 5 minutos
 
-  const logout = async () => {
-    await supabase.auth.signOut();
-  };
+        localStorage.setItem("isNewlyVerified", isNewlyVerified ? "true" : "false");
+        setUser(session.user);
+      } else if (event === "SIGNED_OUT") {
+        clearUser();
+      }
+    },
+    [setUser, clearUser]
+  );
 
-  const signUp = async ({ email, password }: SignUpParams) => {
-    const {
-      data: { session, user },
-      error,
-    } = await supabase.auth.signUp({
-      email,
-      password,
-    });
+  const signUp = useCallback(
+    async ({ email, password }: SignUpParams) => {
+      setError(null);
+      setIsLoading(true);
+      try {
+        const {
+          data: { session, user },
+          error,
+        } = await supabase.auth.signUp({ email, password });
 
-    return { user, error, session };
-  };
+        if (error) {
+          setError(error.message);
+        }
+        return { user, error, session };
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [supabase]
+  );
 
-  const login = async ({ email, password }: LoginParams) => {
-    const {
-      data: { session, user },
-      error,
-    } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+  const login = useCallback(
+    async ({ email, password }: LoginParams) => {
+      setError(null);
+      setIsLoading(true);
+      try {
+        const {
+          data: { session, user },
+          error,
+        } = await supabase.auth.signInWithPassword({ email, password });
 
-    return { user, error, session };
-  };
+        if (error) {
+          setError(error.message);
+        }
+        return { user, error, session };
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [supabase]
+  );
+
+  const logout = useCallback(async () => {
+    setError(null);
+    setIsLoading(true);
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        setError(error.message);
+      }
+      clearUser();
+    } finally {
+      setIsLoading(false);
+    }
+  }, [supabase, clearUser]);
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+    const fetchInitialUser = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        setUser(user);
 
-      setUser(user);
-
-      // Optionally, listen for authentication state changes
-      const { data: authListener } = supabase.auth.onAuthStateChange(
-        (event, session) => {
-          if (event === "SIGNED_IN") {
-            // console.log("ACABA DE INICIAR SESSION");
-
-            if (session?.user) {
-              const confirmedEmailDate = session.user.email_confirmed_at
-                ? new Date(session.user.email_confirmed_at)
-                : null;
-
-              if (confirmedEmailDate) {
-                const isNewlyVerified =
-                  confirmedEmailDate.getTime() > Date.now() - 300000; // Check if verified within the last 5 minutes
-                localStorage.setItem(
-                  "isNewlyVerified",
-                  isNewlyVerified ? "true" : "false"
-                );
-
-                setUser(session.user);
-              }
-              // Email not confirmed yet
-              else {
-                setUser(session.user);
-              }
-            }
-            // There is no user in the session
-            else {
-              setUser(null);
-            }
-          } else if (event === "SIGNED_OUT") {
-            setUser(null);
-          }
-        }
-      );
-
-      return () => {
-        authListener.subscription.unsubscribe();
-      };
+        supabase.auth.onAuthStateChange(handleAuthStateChange);
+      } catch (err) {
+        setError((err as Error).message);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
-    fetchUser();
-  }, [setUser]);
+    fetchInitialUser();
+
+    return () => {
+      const { data: authListener } = supabase.auth.onAuthStateChange(handleAuthStateChange);
+      authListener?.subscription?.unsubscribe();
+    };
+  }, [supabase, setUser, handleAuthStateChange]);
 
   return {
     user,
     logout,
     signUp,
     login,
+    isLoading,
+    error,
   };
 };
 

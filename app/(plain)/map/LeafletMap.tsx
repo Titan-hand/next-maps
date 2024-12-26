@@ -3,7 +3,6 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import { use100vh } from "react-div-100vh";
-import { useGeolocation } from "@uidotdev/usehooks";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { useEffect, useState } from "react";
 import { Input, Button } from "@nextui-org/react";
@@ -13,8 +12,9 @@ import RecenterAutomatically from "./RecenterAutomatically";
 
 export default function LeafletMap() {
   const h = use100vh();
-  const { latitude, longitude, loading, error } = useGeolocation();
-  const { address, isLoading, isError, getCoords, isLoadingCoords } = useUbication();
+
+  const { address, isLoading, isError, error, getCoords, isLoadingCoords, latitude, longitude } =
+    useUbication();
   const [addressInput, setAddressInput] = useState<string>("");
   const [coords, setCoords] = useState<{
     latitude: number | null;
@@ -32,14 +32,16 @@ export default function LeafletMap() {
   };
 
   useEffect(() => {
-    setCoords({ latitude, longitude });
+    if (latitude !== null && longitude !== null) {
+      setCoords({ latitude, longitude });
+    }
   }, [latitude, longitude]);
 
   useEffect(() => {
     setAddressInput(address?.display_name as string);
   }, [address]);
 
-  if (!h || isLoading || loading) return <MapLoader />;
+  if (!h || isLoading) return <MapLoader />;
 
   if (isError || error) {
     return <p>Enable permissions to access your location data</p>;
