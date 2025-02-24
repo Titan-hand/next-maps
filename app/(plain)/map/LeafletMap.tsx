@@ -3,18 +3,18 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import { use100vh } from "react-div-100vh";
-import { useGeolocation } from "@uidotdev/usehooks";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { useEffect, useState } from "react";
+import { Input, Button } from "@nextui-org/react";
 import MapLoader from "@/components/MapLoader";
-import useUbication from "../../hooks/useUbication";
+import useUbication from "../../../hooks/useUbication";
 import RecenterAutomatically from "./RecenterAutomatically";
-import { HEADER_HEIGHT } from "@/const/stylesConst";
 
 export default function LeafletMap() {
   const h = use100vh();
-  const { latitude, longitude, loading, error } = useGeolocation();
-  const { address, isLoading, isError, getCoords, isLoadingCoords } = useUbication();
+
+  const { address, isLoading, isError, error, getCoords, isLoadingCoords, latitude, longitude } =
+    useUbication();
   const [addressInput, setAddressInput] = useState<string>("");
   const [coords, setCoords] = useState<{
     latitude: number | null;
@@ -32,14 +32,16 @@ export default function LeafletMap() {
   };
 
   useEffect(() => {
-    setCoords({ latitude, longitude });
+    if (latitude !== null && longitude !== null) {
+      setCoords({ latitude, longitude });
+    }
   }, [latitude, longitude]);
 
   useEffect(() => {
     setAddressInput(address?.display_name as string);
   }, [address]);
 
-  if (!h || isLoading || loading) return <MapLoader />;
+  if (!h || isLoading) return <MapLoader />;
 
   if (isError || error) {
     return <p>Enable permissions to access your location data</p>;
@@ -55,7 +57,7 @@ export default function LeafletMap() {
         zoom={13}
         scrollWheelZoom={true}
         className="w-full"
-        style={{ height: `calc(${h}px - ${HEADER_HEIGHT})` }}
+        style={{ height: h }}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -73,16 +75,20 @@ export default function LeafletMap() {
       </MapContainer>
       <div className="fixed bottom-2 z-[999] w-full flex items-center justify-center">
         <div className="flex items-center w-1/2">
-          <input
+          <Input
             disabled={isLoadingCoords}
-            className="pr-14 bg-white text-black w-full h-10"
             placeholder="Enter address"
             value={addressInput}
             onChange={(e) => setAddressInput(e.target.value)}
           />
-          <button className="h-10 ml-2 px-4" onClick={onSearchAddress} disabled={isLoadingCoords}>
+          <Button
+            className="ml-2"
+            onClick={onSearchAddress}
+            disabled={isLoadingCoords}
+            isLoading={isLoadingCoords}
+          >
             {isLoadingCoords ? "Loading..." : "Search"}
-          </button>
+          </Button>
         </div>
       </div>
     </>

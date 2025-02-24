@@ -2,8 +2,8 @@
 
 export default function MapLoader() {
   return (
-    <div >
-     Loading...
+    <div>
+      <span> Loading...</span>
     </div>
   );
 }
