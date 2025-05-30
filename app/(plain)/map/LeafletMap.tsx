@@ -5,7 +5,7 @@ import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility
 import { use100vh } from "react-div-100vh";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { useEffect, useState } from "react";
-import { Input, Button } from "@nextui-org/react";
+import { Input, Button } from "@heroui/react";
 import MapLoader from "@/components/MapLoader";
 import useUbication from "../../../hooks/useUbication";
 import RecenterAutomatically from "./RecenterAutomatically";
@@ -13,8 +13,16 @@ import RecenterAutomatically from "./RecenterAutomatically";
 export default function LeafletMap() {
   const h = use100vh();
 
-  const { address, isLoading, isError, error, getCoords, isLoadingCoords, latitude, longitude } =
-    useUbication();
+  const {
+    address,
+    isLoading,
+    isError,
+    error,
+    getCoords,
+    isLoadingCoords,
+    latitude,
+    longitude,
+  } = useUbication();
   const [addressInput, setAddressInput] = useState<string>("");
   const [coords, setCoords] = useState<{
     latitude: number | null;

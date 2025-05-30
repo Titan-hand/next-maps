@@ -1,15 +1,12 @@
 "use client";
-
-import { createClient } from "@/utils/supabase/client";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useToggle } from "usehooks-ts";
 import { FiArrowRight, FiEye, FiEyeOff } from "react-icons/fi";
-import { Input, Button } from "@nextui-org/react";
+import { Input, Button } from "@heroui/react";
 import { redirect, useRouter } from "next/navigation";
 import Link from "next/link";
 import useAuth from "@/hooks/useAuth";
-import { isRedirectError } from "next/dist/client/components/redirect";
 import { toast } from "sonner";
 
 const SignUpPage = () => {
@@ -24,56 +21,45 @@ const SignUpPage = () => {
     passwordRepeat: string;
   }>();
   const { user, signUp } = useAuth();
-  const supabase = createClient();
+  const router = useRouter();
   const [isShowPassword, toggleShowPassword] = useToggle(false);
-  const [showPass, setShowPass] = useState<boolean>(false);
-  const [showPass2, setShowPass2] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [signUpError, setSignUpError] = useState<boolean>(false);
-  const [signUpSuccess, setSignUpSuccess] = useState<boolean>(false);
-
-  const handleToggleShowPassword = () => setShowPass(!showPass);
-  const handleToggleShowPassword2 = () => setShowPass2(!showPass2);
 
   const onSubmit = handleSubmit(async (validFormData) => {
     try {
       setLoading(true);
-      setSignUpError(false);
-      setSignUpSuccess(false);
-
       const { email, password } = validFormData;
 
-      const { error, user } = await signUp({ email, password });
+      // Use the signUp function from useAuth hook
+      const { error } = await signUp({ email, password });
 
       if (error) {
-        setSignUpError(true);
+        toast.error(error.message || "Error creating account");
         return;
       }
 
-      const { error: dbError } = await supabase.from("users").insert({
-        id: user?.id || window.crypto.randomUUID(),
-        username: user?.email || window.crypto.randomUUID(),
-        avatar_url: user?.user_metadata?.avatar_url || "",
-      });
+      // No need to manually insert into profiles table
+      // The database trigger will automatically create the profile
 
-      if (dbError) {
-        console.error(dbError);
-        setSignUpError(true);
-        setSignUpSuccess(false);
-        return;
-      }
+      // Show success toast and redirect to map page
+      toast.success(
+        "Account created! Please check your email to verify your account."
+      );
 
-      setSignUpSuccess(true);
+      // Redirect regardless of user state since we know signup was successful
+      router.push("/map");
     } catch (error) {
-      setSignUpError(true);
-      setSignUpSuccess(false);
+      console.error(error);
+      toast.error("An unexpected error occurred");
     } finally {
       setLoading(false);
     }
   });
 
-  if (user) {
-    return redirect("/");
+  // Only redirect on initial load if user is already logged in
+  // We'll handle the redirect manually after signup
+  if (user && !loading) {
+    router.push("/map");
   }
 
   return (
@@ -98,16 +84,6 @@ const SignUpPage = () => {
       </p>
       <form onSubmit={onSubmit} autoComplete="off">
         <div className="flex flex-col gap-4">
-          {signUpError && (
-            <div className="text-red-500">
-              <p>Error creating user!</p>
-            </div>
-          )}
-          {signUpSuccess && (
-            <div className="text-green-500">
-              <p>Account created! Please check your email to verify your account.</p>
-            </div>
-          )}
           <div>
             <label htmlFor="email">Email</label>
             <Input
@@ -122,8 +98,13 @@ const SignUpPage = () => {
                 },
               })}
             />
-            {errors.email && <p className="text-red-500">{errors.email.message}</p>}
+            {errors.email && (
+              <p className="block text-orange-700 text-sm mt-1">
+                {errors.email.message}
+              </p>
+            )}
           </div>
+
           <div>
             <label htmlFor="password">Password</label>
             <Input
@@ -145,10 +126,19 @@ const SignUpPage = () => {
               }
               {...register("password", {
                 required: "Password is required",
+                minLength: {
+                  value: 6,
+                  message: "Password must be at least 6 characters",
+                },
               })}
             />
-            {errors.password && <p className="text-red-500">{errors.password.message}</p>}
+            {errors.password && (
+              <p className="block text-orange-700 text-sm mt-1">
+                {errors.password.message}
+              </p>
+            )}
           </div>
+
           <div>
             <label htmlFor="passwordRepeat">Repeat Password</label>
             <Input
@@ -169,26 +159,35 @@ const SignUpPage = () => {
                 </button>
               }
               {...register("passwordRepeat", {
-                required: "Password is required",
+                required: "Please confirm your password",
+                validate: (value) =>
+                  value === watch("password") || "Passwords don't match",
               })}
             />
-
             {errors.passwordRepeat && (
-              <p className="text-red-500">{errors.passwordRepeat.message}</p>
+              <p className="block text-orange-700 text-sm mt-1">
+                {errors.passwordRepeat.message}
+              </p>
             )}
           </div>
 
-          <Button type="submit" disabled={loading} color="primary" fullWidth isLoading={loading}>
+          <Button
+            type="submit"
+            disabled={loading}
+            color="primary"
+            fullWidth
+            isLoading={loading}
+          >
             Sign Up
             <FiArrowRight />
           </Button>
         </div>
       </form>
-      <div className="flex flex-col items-center justify-center mt-6 text-slate-500	">
-    
-
+      <div className="flex flex-col items-center justify-center mt-6 text-slate-500">
         <Link href="/login">
-          <span className="inline-block me-2">Do you already have an account?</span>
+          <span className="inline-block me-2">
+            Do you already have an account?
+          </span>
           <span>Login</span>
         </Link>
       </div>

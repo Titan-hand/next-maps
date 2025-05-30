@@ -2,7 +2,7 @@ import { FiLogOut, FiChevronDown, FiUser } from "react-icons/fi";
 import useAuth from "@/hooks/useAuth";
 import { createClient } from "@/utils/supabase/client";
 import { useState, useEffect } from "react";
-import { SimpleUser } from "@/types";
+import type { User } from "@supabase/supabase-js";
 import {
   Dropdown,
   DropdownTrigger,
@@ -10,11 +10,11 @@ import {
   DropdownItem,
   Button,
   Avatar,
-} from "@nextui-org/react";
+} from "@heroui/react";
 
 export const UserButtonNavbar = () => {
   const supabase = createClient();
-  const [userBasicData, setUserBasicData] = useState<SimpleUser | null>(null);
+  const [userBasicData, setUserBasicData] = useState<User | null>(null);
   const { user, logout } = useAuth();
 
   useEffect(() => {
@@ -23,7 +23,7 @@ export const UserButtonNavbar = () => {
         .from("users")
         .select("*")
         .eq("id", user?.id)
-        .returns<SimpleUser[]>();
+        .returns<User[]>();
       if (error) {
         console.error(error);
         return;
@@ -38,8 +38,8 @@ export const UserButtonNavbar = () => {
       <DropdownTrigger>
         <Button variant="bordered">
           <Avatar
-            src={userBasicData?.avatar_url || ""}
-            name={userBasicData?.username || ""}
+            src={userBasicData?.user_metadata?.avatar_url || ""}
+            name={userBasicData?.email || ""}
             className="w-6 h-6 text-tiny"
             showFallback
           />
@@ -48,7 +48,11 @@ export const UserButtonNavbar = () => {
         </Button>
       </DropdownTrigger>
       <DropdownMenu aria-label="Dynamic Actions">
-        <DropdownItem key="profile" startContent={<FiUser />} href={`/profile/${user?.id}`}>
+        <DropdownItem
+          key="profile"
+          startContent={<FiUser />}
+          href={`/profile/${user?.id}`}
+        >
           Profile
         </DropdownItem>
         <DropdownItem key="sigOut" startContent={<FiLogOut />} onClick={logout}>

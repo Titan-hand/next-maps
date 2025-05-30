@@ -1,8 +1,7 @@
 "use client";
 import Planet from "./assets/vecteezy_maps-guidance-3d-travel-and-holiday-illustration_28241866.png";
 import Image from "next/image";
-import { Button } from "@nextui-org/button";
-import { Card, CardBody } from "@nextui-org/react";
+import { Card, CardBody, Button } from "@heroui/react";
 import { Bricolage_Grotesque } from "next/font/google";
 import { FaSave, FaShareAltSquare, FaFileArchive } from "react-icons/fa";
 import AOS from "aos";
@@ -54,15 +53,20 @@ export default function Index() {
           data-aos="fade-up"
           data-aos-delay="300"
         >
-          Save, share, preview your places using a friendly and simple platform. You can export,
-          import and share your places with your friends.
+          Save, share, preview your places using a friendly and simple platform.
+          You can export, import and share your places with your friends.
         </p>
         <div
           className="flex items-center justify-center mt-5 gap-3"
           data-aos="fade-up"
           data-aos-delay="300"
         >
-          <Button color="primary" onClick={handleClick} variant="shadow" size="lg">
+          <Button
+            color="primary"
+            onClick={handleClick}
+            variant="shadow"
+            size="lg"
+          >
             Get Started
           </Button>
           <Button onClick={handleClick} size="lg">
@@ -79,8 +83,8 @@ export default function Index() {
             <CardBody>
               <FaSave size={40} />
               <p className="mt-5">
-                Easily save and organize your favorite places. Access them anytime from a
-                user-friendly platform.
+                Easily save and organize your favorite places. Access them
+                anytime from a user-friendly platform.
               </p>
             </CardBody>
           </Card>
@@ -94,8 +98,8 @@ export default function Index() {
             <CardBody>
               <FaShareAltSquare size={40} />
               <p className="mt-5">
-                Share your saved locations with friends in just one click. Discover new places
-                through your connections.
+                Share your saved locations with friends in just one click.
+                Discover new places through your connections.
               </p>
             </CardBody>
           </Card>
@@ -109,8 +113,8 @@ export default function Index() {
             <CardBody>
               <FaFileArchive size={40} />
               <p className="mt-5">
-                Export your list of places or import locations from other devices. Keep your
-                favorite spots always accessible and synced.
+                Export your list of places or import locations from other
+                devices. Keep your favorite spots always accessible and synced.
               </p>
             </CardBody>
           </Card>

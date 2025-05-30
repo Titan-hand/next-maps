@@ -1,5 +1,5 @@
 import NextLink from "next/link";
-import { Button, Skeleton } from "@nextui-org/react";
+import { Button, Skeleton } from "@heroui/react";
 import { UserButtonNavbar } from "./userButtonNavbar";
 import { LoginButtonNavbar } from "./loginButtonNavbar";
 import useAuth from "@/hooks/useAuth";
@@ -10,7 +10,12 @@ export const Navbar = () => {
   return (
     <div className="mx-auto mt-5 w-full max-w-5xl px-4 flex items-center justify-between relative z-20">
       <p className="text-2xl font-bold z-20">
-        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 100 100">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="32"
+          height="32"
+          viewBox="0 0 100 100"
+        >
           <path
             fill="currentColor"
             fillRule="evenodd"
@@ -35,7 +40,9 @@ export const Navbar = () => {
         </div>
       )}
 
-      <div className="z-20">{!!user ? <UserButtonNavbar /> : <LoginButtonNavbar />}</div>
+      <div className="z-20">
+        {!!user ? <UserButtonNavbar /> : <LoginButtonNavbar />}
+      </div>
     </div>
   );
 };

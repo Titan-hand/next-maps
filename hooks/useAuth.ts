@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { create } from "zustand";
-import type { User } from "@/types";
+import type { User } from "@supabase/supabase-js";
 import { AuthError, Session } from "@supabase/supabase-js";
 
 interface UserState {
@@ -52,11 +52,17 @@ const useAuth = (): UseAuth => {
   const handleAuthStateChange = useCallback(
     (event: string, session: Session | null) => {
       if (event === "SIGNED_IN" && session?.user) {
+        console.log("the logged user", session.user);
+
         const isNewlyVerified =
           session.user.email_confirmed_at &&
-          new Date(session.user.email_confirmed_at).getTime() > Date.now() - 300000; // Verificado en los últimos 5 minutos
+          new Date(session.user.email_confirmed_at).getTime() >
+            Date.now() - 300000; // Verificado en los últimos 5 minutos
 
-        localStorage.setItem("isNewlyVerified", isNewlyVerified ? "true" : "false");
+        localStorage.setItem(
+          "isNewlyVerified",
+          isNewlyVerified ? "true" : "false"
+        );
         setUser(session.user);
       } else if (event === "SIGNED_OUT") {
         clearUser();
@@ -142,7 +148,9 @@ const useAuth = (): UseAuth => {
     fetchInitialUser();
 
     return () => {
-      const { data: authListener } = supabase.auth.onAuthStateChange(handleAuthStateChange);
+      const { data: authListener } = supabase.auth.onAuthStateChange(
+        handleAuthStateChange
+      );
       authListener?.subscription?.unsubscribe();
     };
   }, [supabase, setUser, handleAuthStateChange]);

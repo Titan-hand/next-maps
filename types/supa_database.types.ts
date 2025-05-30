@@ -9,36 +9,132 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      notes: {
+      place_comments: {
         Row: {
-          id: number
-          title: string | null
-        }
-        Insert: {
-          id?: number
-          title?: string | null
-        }
-        Update: {
-          id?: number
-          title?: string | null
-        }
-        Relationships: []
-      }
-      users: {
-        Row: {
-          avatar_url: string | null
+          comment: string
+          created_at: string | null
           id: string
-          username: string | null
+          place_id: string
+          updated_at: string | null
+          user_id: string
         }
         Insert: {
-          avatar_url?: string | null
+          comment: string
+          created_at?: string | null
           id?: string
-          username?: string | null
+          place_id: string
+          updated_at?: string | null
+          user_id: string
         }
         Update: {
-          avatar_url?: string | null
+          comment?: string
+          created_at?: string | null
           id?: string
-          username?: string | null
+          place_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "place_comments_place_id_fkey"
+            columns: ["place_id"]
+            isOneToOne: false
+            referencedRelation: "places"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      place_likes: {
+        Row: {
+          created_at: string | null
+          id: string
+          place_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          place_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          place_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "place_likes_place_id_fkey"
+            columns: ["place_id"]
+            isOneToOne: false
+            referencedRelation: "places"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      place_photos: {
+        Row: {
+          created_at: string | null
+          id: string
+          place_id: string
+          storage_path: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          place_id: string
+          storage_path: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          place_id?: string
+          storage_path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "place_photos_place_id_fkey"
+            columns: ["place_id"]
+            isOneToOne: false
+            referencedRelation: "places"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      places: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          latitude: number
+          longitude: number
+          title: string
+          updated_at: string | null
+          user_id: string
+          zoom_level: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          latitude: number
+          longitude: number
+          title: string
+          updated_at?: string | null
+          user_id: string
+          zoom_level?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          latitude?: number
+          longitude?: number
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+          zoom_level?: number | null
         }
         Relationships: []
       }
@@ -138,4 +234,19 @@ export type Enums<
   ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
     ? PublicSchema["Enums"][PublicEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof PublicSchema["CompositeTypes"]
+    | { schema: keyof Database },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof Database
+  }
+    ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof PublicSchema["CompositeTypes"]
+    ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never

@@ -1,7 +1,8 @@
 "use client";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { NextUIProvider } from "@nextui-org/react";
+import { HeroUIProvider } from "@heroui/react";
+
 import { Toaster } from "sonner";
 
 const queryClient = new QueryClient({
@@ -16,13 +17,13 @@ const queryClient = new QueryClient({
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <NextUIProvider>
+      <HeroUIProvider>
         <QueryClientProvider client={queryClient}>
           {children}
           <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
-      </NextUIProvider>
-      <Toaster position="top-right"/>
+      </HeroUIProvider>
+      <Toaster position="top-right" />
     </>
   );
 }

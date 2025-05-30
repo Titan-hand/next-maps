@@ -1,13 +1,12 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useToggle } from "usehooks-ts";
 import { FiArrowRight, FiEye, FiEyeOff } from "react-icons/fi";
-import { Input, Button } from "@nextui-org/react";
-import { redirect, useRouter } from "next/navigation";
+import { Input, Button } from "@heroui/react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import useAuth from "@/hooks/useAuth";
-import { isRedirectError } from "next/dist/client/components/redirect";
 import { toast } from "sonner";
 
 const LoginPage = () => {
@@ -23,13 +22,11 @@ const LoginPage = () => {
     },
   });
 
-  const { user, login } = useAuth();
+  const { user, login, isLoading: authLoading } = useAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
   const onSubmit = handleSubmit(async (validFormData) => {
-    let redirectRoute = "";
-
     try {
       setLoading(true);
       const { email, password } = validFormData;
@@ -37,34 +34,33 @@ const LoginPage = () => {
 
       if (!error) {
         toast.success("Welcome back!");
+        router.push("/map");
         return;
       }
 
       if (error.message === "Email not confirmed") {
-        toast.error("Need to confirm email!");
+        toast.error("Please check your email and confirm your account!");
         return;
       }
 
       toast.error("Invalid email or password");
     } catch (error) {
-      console.error("the error", error);
-      if (isRedirectError(error)) {
-        console.log("is redirect error, nothing to worry about");
-        toast.error("Something went wrong");
-      } else {
-        toast.error("Invalid email or password");
-      }
+      console.error("Login error:", error);
+      toast.error("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
-      if (redirectRoute) router.push(redirectRoute);
     }
   });
 
-  // Redirect if user is already logged in
-  if (user) {
-    return redirect("/");
-  }
+  // Use useEffect for client-side redirection
+  useEffect(() => {
+    if (user && !authLoading) {
+      router.push("/map");
+    }
+  }, [user, authLoading, router]);
 
+  // Don't use redirect in client components
+  // Render the form while redirection happens
   return (
     <div className="max-w-80 w-full mx-auto mt-60">
       <p className="flex justify-center text-center">
@@ -101,7 +97,9 @@ const LoginPage = () => {
             })}
           />
           {errors.email && (
-            <p className="block text-orange-700 text-sm mt-1">{errors.email.message}</p>
+            <p className="block text-orange-700 text-sm mt-1">
+              {errors.email.message}
+            </p>
           )}
         </div>
 
@@ -131,14 +129,16 @@ const LoginPage = () => {
           />
 
           {errors.password && (
-            <p className="block text-orange-700 text-sm mt-1">{errors.password.message}</p>
+            <p className="block text-orange-700 text-sm mt-1">
+              {errors.password.message}
+            </p>
           )}
         </div>
 
         <Button
-          type="submit"    
+          type="submit"
           disabled={loading}
-          color="primary"  
+          color="primary"
           fullWidth
           className="mt-3"
           isLoading={loading}
@@ -148,7 +148,7 @@ const LoginPage = () => {
         </Button>
       </form>
 
-      <div className="flex flex-col items-center justify-center mt-6 text-slate-500	">
+      <div className="flex flex-col items-center justify-center mt-6 text-slate-500">
         <button>Forgot password?</button>
 
         <Link href="/register">
