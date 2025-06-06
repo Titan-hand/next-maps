@@ -10,7 +10,7 @@ export type PlaceFavorite = {
 };
 
 export type FavoritePlace = Place & {
-  favorite_at: string;
+  favorited_at: string;
 };
 
 // Get the appropriate Supabase client
