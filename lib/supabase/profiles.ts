@@ -30,7 +30,14 @@ export async function getProfile(userId: string): Promise<Profile | null> {
       .eq("id", userId)
       .single();
 
-    if (error) throw error;
+    if (error) {
+      // Handle the specific case where no rows are found
+      if (error.code === "PGRST116") {
+        console.log(`No profile found for user ID: ${userId}`);
+        return null;
+      }
+      throw error;
+    }
 
     return data;
   } catch (error) {
@@ -123,7 +130,14 @@ export async function getProfileByUsername(
       .eq("username", username)
       .single();
 
-    if (error) throw error;
+    if (error) {
+      // Handle the specific case where no rows are found
+      if (error.code === "PGRST116") {
+        console.log(`No profile found for username: ${username}`);
+        return null;
+      }
+      throw error;
+    }
 
     return data;
   } catch (error) {

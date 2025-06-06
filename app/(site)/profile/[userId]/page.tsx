@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { getProfileByUsername } from "@/lib/supabase/profiles";
+import { getProfileByUsername, getProfile } from "@/lib/supabase/profiles";
 import { getUserFavoritePlaces } from "@/lib/supabase/favorites";
 import { FavoritePlace } from "@/lib/supabase/favorites";
 import Image from "next/image";
@@ -9,10 +9,13 @@ import Link from "next/link";
 import { FaStar, FaMapMarkerAlt } from "react-icons/fa";
 
 interface ProfilePageProps {
-  username: string;
+  params: {
+    userId: string;
+  };
 }
 
-const ProfilePage = ({ username }: ProfilePageProps) => {
+const ProfilePage = ({ params }: ProfilePageProps) => {
+  const { userId } = params;
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<any>(null);
   const [favoritePlaces, setFavoritePlaces] = useState<FavoritePlace[]>([]);
@@ -22,7 +25,26 @@ const ProfilePage = ({ username }: ProfilePageProps) => {
     const loadProfile = async () => {
       setLoading(true);
       try {
-        const profileData = await getProfileByUsername(username);
+        let profileData = null;
+
+        // First try to get profile by username (assuming userId is a username)
+        try {
+          profileData = await getProfileByUsername(userId);
+        } catch (error) {
+          console.log(
+            "Failed to get profile by username, trying by ID:",
+            error
+          );
+        }
+
+        // If that fails, try by user ID (in case userId is actually a UUID)
+        if (!profileData) {
+          try {
+            profileData = await getProfile(userId);
+          } catch (error) {
+            console.log("Failed to get profile by ID:", error);
+          }
+        }
 
         if (!profileData) {
           setError("Profile not found");
@@ -45,7 +67,7 @@ const ProfilePage = ({ username }: ProfilePageProps) => {
     };
 
     loadProfile();
-  }, [username]);
+  }, [userId]);
 
   if (loading) {
     return (
@@ -116,7 +138,7 @@ const ProfilePage = ({ username }: ProfilePageProps) => {
         <div className="bg-gray-50 rounded-lg p-8 text-center">
           <FaMapMarkerAlt className="text-gray-400 text-5xl mx-auto mb-4" />
           <p className="text-gray-600">
-            {username === profile.username
+            {userId === profile.username
               ? "You haven't"
               : `${profile.username} hasn't`}{" "}
             favorited any places yet.
