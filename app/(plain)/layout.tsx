@@ -8,6 +8,10 @@ export const metadata = {
   description: "The fastest way to build apps with Next.js and Supabase",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return <main className="w-full flex flex-col overflow-hidden">{children}</main>;
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return <main className="w-full h-full">{children}</main>;
 }

@@ -3,9 +3,9 @@ import { Navbar } from "@/components/Navbar";
 
 export const CustomLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="overflow-hidden flex flex-col w-full">
+    <div className="min-h-full flex flex-col w-full">
       <Navbar />
-      {children}
+      <div className="flex-1">{children}</div>
     </div>
   );
 };

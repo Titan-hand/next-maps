@@ -88,6 +88,8 @@ function AddPlaceClickHandler({
 
 export default function LeafletMap() {
   const h = use100vh();
+  // Account for navbar height (~80px)
+  const mapHeight = h ? h - 80 : "calc(100vh - 80px)";
   const { user } = useAuth();
   const {
     address,
@@ -221,7 +223,7 @@ export default function LeafletMap() {
         scrollWheelZoom={true}
         className="w-full"
         style={{
-          height: h,
+          height: mapHeight,
           cursor: isAddPlaceMode ? "crosshair" : "grab",
         }}
       >

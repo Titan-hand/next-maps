@@ -8,7 +8,7 @@ export const Navbar = () => {
   const { user, isLoading } = useAuth();
 
   return (
-    <div className="mx-auto mt-5 w-full max-w-5xl px-4 flex items-center justify-between relative z-20">
+    <div className="mx-auto py-5 w-full max-w-5xl px-4 flex items-center justify-between relative z-20">
       <p className="text-2xl font-bold z-20">
         <svg
           xmlns="http://www.w3.org/2000/svg"
