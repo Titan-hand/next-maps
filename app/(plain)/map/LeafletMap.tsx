@@ -3,13 +3,7 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import { use100vh } from "react-div-100vh";
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Popup,
-  useMapEvents,
-} from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from "react-leaflet";
 import { useEffect, useState } from "react";
 import { Input, Button, Switch } from "@heroui/react";
 import { FaPlus, FaLocationDot } from "react-icons/fa6";
@@ -22,6 +16,7 @@ import useAuth from "../../../hooks/useAuth";
 import { usePlaces } from "../../../hooks/usePlaces";
 import RecenterAutomatically from "./RecenterAutomatically";
 import { Tables } from "@/types/supa_database.types";
+import { IoSearchOutline } from "react-icons/io5";
 
 type Place = Tables<"places">;
 type PlacePhoto = Tables<"place_photos">;
@@ -35,8 +30,7 @@ interface PlaceWithPhotos extends Place {
 const userLocationIcon = new L.Icon({
   iconUrl:
     "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png",
-  shadowUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
+  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
   iconSize: [25, 41],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
@@ -46,8 +40,7 @@ const userLocationIcon = new L.Icon({
 const placeIcon = new L.Icon({
   iconUrl:
     "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png",
-  shadowUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
+  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
   iconSize: [25, 41],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
@@ -57,8 +50,7 @@ const placeIcon = new L.Icon({
 const favoritePlaceIcon = new L.Icon({
   iconUrl:
     "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-gold.png",
-  shadowUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
+  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
   iconSize: [25, 41],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
@@ -118,9 +110,7 @@ export default function LeafletMap() {
   const [isAddPlaceMode, setIsAddPlaceMode] = useState(false);
 
   // Place popover state
-  const [selectedPlace, setSelectedPlace] = useState<PlaceWithPhotos | null>(
-    null
-  );
+  const [selectedPlace, setSelectedPlace] = useState<PlaceWithPhotos | null>(null);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [isNewPlace, setIsNewPlace] = useState(false);
 
@@ -249,7 +239,6 @@ export default function LeafletMap() {
           </Popup>
         </Marker>
 
-        {/* User's saved places */}
         {places.map((place) => (
           <Marker
             key={place.id}
@@ -263,20 +252,15 @@ export default function LeafletMap() {
               <div className="min-w-[220px] max-w-[280px]">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
-                    <h3 className="text-sm font-bold text-gray-800 leading-tight">
-                      {place.title}
-                    </h3>
+                    <h3 className="text-sm font-bold text-gray-800 leading-tight">{place.title}</h3>
                     <div className="flex items-center gap-1 mt-1">
                       <span className="text-xs text-gray-500">
-                        {place.latitude.toFixed(4)},{" "}
-                        {place.longitude.toFixed(4)}
+                        {place.latitude.toFixed(4)}, {place.longitude.toFixed(4)}
                       </span>
                     </div>
                   </div>
                   {place.is_favorited && (
-                    <span className="ml-2 text-yellow-500 text-sm flex-shrink-0">
-                      ⭐
-                    </span>
+                    <span className="ml-2 text-yellow-500 text-sm flex-shrink-0">⭐</span>
                   )}
                 </div>
 
@@ -303,10 +287,7 @@ export default function LeafletMap() {
         ))}
 
         {/* Click handler for adding places */}
-        <AddPlaceClickHandler
-          isAddMode={isAddPlaceMode}
-          onAddPlace={handleAddPlace}
-        />
+        <AddPlaceClickHandler isAddMode={isAddPlaceMode} onAddPlace={handleAddPlace} />
 
         <RecenterAutomatically lat={coords.latitude!} lng={coords.longitude!} />
       </MapContainer>
@@ -315,7 +296,7 @@ export default function LeafletMap() {
       <div className="fixed bottom-2 z-[999] w-full flex flex-col items-center gap-3">
         {/* Add place mode toggle */}
         {user && (
-          <div className="bg-white rounded-full shadow-lg px-4 py-2 flex items-center gap-3 border">
+          <div className="bg-black rounded-full shadow-lg px-4 py-2 flex items-center gap-3">
             <Switch
               size="sm"
               isSelected={isAddPlaceMode}
@@ -323,19 +304,15 @@ export default function LeafletMap() {
               color="primary"
             />
             <span className="text-sm font-medium flex items-center gap-2">
-              <FaPlus
-                className={isAddPlaceMode ? "text-primary" : "text-gray-400"}
-              />
+              <FaPlus className={isAddPlaceMode ? "text-primary" : "text-gray-400"} />
               Add Place Mode
             </span>
-            {isAddPlaceMode && (
-              <span className="text-xs text-gray-500">Click map to add</span>
-            )}
+            {isAddPlaceMode && <span className="text-xs text-gray-500">Click map to add</span>}
           </div>
         )}
 
         {/* Search bar */}
-        <div className="flex items-center w-1/2 bg-white rounded-full shadow-lg p-2">
+        <div className="flex items-center w-1/2 bg-black rounded-full shadow-lg p-2">
           <FaLocationDot className="text-gray-400 ml-3 mr-2" />
           <Input
             disabled={isLoadingCoords}
@@ -356,14 +333,13 @@ export default function LeafletMap() {
           />
           <Button
             isIconOnly
-            color="primary"
             onPress={onSearchAddress}
             disabled={isLoadingCoords}
             isLoading={isLoadingCoords}
-            className="ml-2"
+            className="ml-2 mr-4"
             size="sm"
           >
-            🔍
+            <IoSearchOutline size={18}/>
           </Button>
         </div>
 

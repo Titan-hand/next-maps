@@ -150,6 +150,7 @@ export default function PlacePopover({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
+      closeButton={false}
       size="lg"
       scrollBehavior="inside"
       classNames={{
@@ -160,18 +161,11 @@ export default function PlacePopover({
       <ModalContent>
         <ModalHeader className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <h2 className="text-lg font-semibold">
-              {place.title || "Untitled Place"}
-            </h2>
+            <h2 className="text-lg font-semibold">{place.title || "Untitled Place"}</h2>
           </div>
 
           <div className="flex items-center gap-2">
-            <Button
-              isIconOnly
-              variant="light"
-              onPress={handleFavoriteToggle}
-              disabled={isLoading}
-            >
+            <Button isIconOnly variant="light" onPress={handleFavoriteToggle} disabled={isLoading}>
               {isFavorited ? (
                 <FaHeart className="text-red-500" />
               ) : (
@@ -211,19 +205,16 @@ export default function PlacePopover({
             </div>
           ) : (
             // For existing places, show tabs
-            <Tabs
-              selectedKey={activeTab}
-              onSelectionChange={(key) => setActiveTab(key as string)}
-            >
+            <Tabs selectedKey={activeTab} onSelectionChange={(key) => setActiveTab(key as string)}>
               <Tab key="details" title="Details">
                 {/* Place Details View */}
                 <div className="space-y-4">
                   {/* Description */}
                   <div>
-                    <label className="text-sm font-medium text-gray-700 mb-2 block">
+                    <label className="text-sm font-medium text-gray-400 mb-2 block">
                       Description
                     </label>
-                    <p className="text-gray-600 min-h-[60px] p-3 bg-gray-50 rounded-lg">
+                    <p className=" min-h-[60px] p-3 rounded-lg bg-[#27272a]">
                       {place.description || "No description added yet."}
                     </p>
                   </div>
@@ -261,9 +252,7 @@ export default function PlacePopover({
                 {/* Photos Section */}
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <label className="text-sm font-medium text-gray-700">
-                      Manage Photos
-                    </label>
+                    <label className="text-sm font-medium text-gray-700">Manage Photos</label>
                     <Button
                       size="sm"
                       variant="bordered"
@@ -301,9 +290,7 @@ export default function PlacePopover({
                     <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
                       <FaCamera className="mx-auto text-gray-400 text-2xl mb-2" />
                       <p className="text-gray-500 text-sm">No photos yet</p>
-                      <p className="text-gray-400 text-xs">
-                        Click "Add Photo" to upload images
-                      </p>
+                      <p className="text-gray-400 text-xs">Click "Add Photo" to upload images</p>
                     </div>
                   )}
                 </div>
@@ -314,7 +301,7 @@ export default function PlacePopover({
 
         <ModalFooter>
           <Button variant="light" onPress={onClose}>
-            Close
+            Cancel
           </Button>
 
           {!isNewPlace && activeTab === "details" && (

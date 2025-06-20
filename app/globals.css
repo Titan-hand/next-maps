@@ -71,3 +71,77 @@
     background-position: 100% 0;
   }
 }
+
+/* Botón con gradiente simplificado */
+.gradient-button {
+  /* Contenedor principal */
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 500;
+  text-decoration: none;
+  overflow: hidden;
+  backface-visibility: hidden;
+  max-width: 100%;
+}
+
+.gradient-button .button-content {
+  /* Contenido del botón */
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    height: 3rem;
+  background-color: var(--color--000000, #000);
+  border-radius: 9px;
+  color: white;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+.gradient-button .gradient-bg {
+  /* Fondo gradiente animado */
+  position: absolute;
+  top: -100%;
+  left: -100%;
+  width: 300%;
+  height: 300%;
+  background: linear-gradient(135deg, 
+    #9ce2d8 0%, 
+    #0364c1 40%, 
+    #f175be 58%, 
+    #e96c00 80%
+  );
+  transition: none;
+  border-radius: inherit;
+}
+
+/* Animación infinita en hover */
+.gradient-button:hover .gradient-bg {
+  animation: borderRotate 2s linear infinite;
+}
+
+@keyframes borderRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* HTML correspondiente:
+<a href="#" class="gradient-button" data-popup="login">
+  <div class="button-content">
+    <div>Register</div>
+  </div>
+  <div class="gradient-bg"></div>
+</a>
+*/

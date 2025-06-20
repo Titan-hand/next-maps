@@ -1,4 +1,4 @@
-import LoginPage from "@/components/pages/login";
+import LoginPage from "@/components/pages/Login";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`

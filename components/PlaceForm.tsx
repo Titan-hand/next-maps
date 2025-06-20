@@ -52,7 +52,7 @@ export default function PlaceForm({
   };
 
   return (
-    <Card>
+    <Card className="shadow-none">
       <CardBody>
         <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">
           {/* Title Field */}
